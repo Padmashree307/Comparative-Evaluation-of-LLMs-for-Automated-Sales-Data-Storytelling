@@ -6,9 +6,9 @@ scipy>=1.10.0
 # Machine Learning
 scikit-learn>=1.3.0
 
-# LLM APIs
-google-generativeai>=0.3.0
-cohere>=4.37
+# LLM APIs - FIXED: Correct Gemini package
+google-genai>=1.0.0
+cohere>=5.0.0
 groq>=0.4.0
 huggingface-hub>=0.19.0
 

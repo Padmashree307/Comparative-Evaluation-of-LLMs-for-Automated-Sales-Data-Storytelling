@@ -3,8 +3,9 @@ from typing import Dict, List
 import time
 from datetime import datetime
 
-# LLM API imports
-import google.generativeai as genai
+# FIXED: Correct Gemini API import
+from google import genai
+from google.genai import types
 import cohere
 from groq import Groq
 from huggingface_hub import InferenceClient
@@ -30,31 +31,41 @@ class MultiLLMNarrativeGenerator:
     def _initialize_clients(self):
         """Initialize all LLM API clients"""
         
-            # Gemini 2.0 Flash
-        if 'gemini' in self.api_keys:
-            genai.configure(api_key=self.api_keys['gemini'])
-            self.clients['gemini'] = genai.GenerativeModel("gemini-2.0-flash")
-            print("✓ Gemini 2.0 Flash initialized")
-
+        # FIXED: Gemini 2.0 Flash initialization
+        if 'gemini' in self.api_keys and self.api_keys['gemini']:
+            try:
+                self.clients['gemini'] = genai.Client(api_key=self.api_keys['gemini'])
+                print("✓ Gemini 2.0 Flash initialized")
+            except Exception as e:
+                print(f"✗ Gemini initialization failed: {str(e)}")
         
         # Cohere Command R+
-        if 'cohere' in self.api_keys:
-            self.clients['cohere'] = cohere.Client(api_key=self.api_keys['cohere'])
-            print("✓ Cohere Command R+ initialized")
+        if 'cohere' in self.api_keys and self.api_keys['cohere']:
+            try:
+                self.clients['cohere'] = cohere.Client(api_key=self.api_keys['cohere'])
+                print("✓ Cohere Command R+ initialized")
+            except Exception as e:
+                print(f"✗ Cohere initialization failed: {str(e)}")
         
         # Groq Llama 3.1
-        if 'groq' in self.api_keys:
-            self.clients['groq'] = Groq(api_key=self.api_keys['groq'])
-            print("✓ Groq Llama 3.1 initialized")
+        if 'groq' in self.api_keys and self.api_keys['groq']:
+            try:
+                self.clients['groq'] = Groq(api_key=self.api_keys['groq'])
+                print("✓ Groq Llama 3.1 initialized")
+            except Exception as e:
+                print(f"✗ Groq initialization failed: {str(e)}")
         
         # HuggingFace Inference
-        if 'huggingface' in self.api_keys:
-            self.clients['huggingface'] = InferenceClient(
-                token=self.api_keys['huggingface']
-            )
-            print("✓ HuggingFace Inference initialized")
+        if 'huggingface' in self.api_keys and self.api_keys['huggingface']:
+            try:
+                self.clients['huggingface'] = InferenceClient(
+                    token=self.api_keys['huggingface']
+                )
+                print("✓ HuggingFace Inference initialized")
+            except Exception as e:
+                print(f"✗ HuggingFace initialization failed: {str(e)}")
     
-    def generate_with_gemini(self, prompt: str, model: str = "gemini-2.0-flash") -> Dict:
+    def generate_with_gemini(self, prompt: str, model: str = "gemini-2.0-flash-exp") -> Dict:
         """
         Generate narrative using Google Gemini.
         
@@ -68,15 +79,16 @@ class MultiLLMNarrativeGenerator:
         start_time = time.time()
         
         try:
+            # FIXED: Correct Gemini API call
             response = self.clients['gemini'].models.generate_content(
                 model=model,
                 contents=prompt,
-                config={
-                    'temperature': 0.7,
-                    'max_output_tokens': 2048,
-                    'top_p': 0.95,
-                    'top_k': 40
-                }
+                config=types.GenerateContentConfig(
+                    temperature=0.7,
+                    max_output_tokens=2048,
+                    top_p=0.95,
+                    top_k=40
+                )
             )
             
             narrative = response.text
@@ -103,16 +115,7 @@ class MultiLLMNarrativeGenerator:
             }
     
     def generate_with_cohere(self, prompt: str, model: str = "command-r-plus") -> Dict:
-        """
-        Generate narrative using Cohere Command R+.
-        
-        Args:
-            prompt: Structured prompt for narrative generation
-            model: Cohere model version
-            
-        Returns:
-            Dictionary with narrative and metadata
-        """
+        """Generate narrative using Cohere Command R+."""
         start_time = time.time()
         
         try:
@@ -151,30 +154,15 @@ class MultiLLMNarrativeGenerator:
             }
     
     def generate_with_groq(self, prompt: str, model: str = "llama-3.1-70b-versatile") -> Dict:
-        """
-        Generate narrative using Groq Llama 3.1.
-        
-        Args:
-            prompt: Structured prompt for narrative generation
-            model: Groq model version
-            
-        Returns:
-            Dictionary with narrative and metadata
-        """
+        """Generate narrative using Groq Llama 3.1."""
         start_time = time.time()
         
         try:
             response = self.clients['groq'].chat.completions.create(
                 model=model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert sales analytics director creating executive business reports."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
+                    {"role": "system", "content": "You are an expert sales analytics director creating executive business reports."},
+                    {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
                 max_tokens=2048,
@@ -206,29 +194,14 @@ class MultiLLMNarrativeGenerator:
     
     def generate_with_huggingface(self, prompt: str, 
                                   model: str = "mistralai/Mixtral-8x7B-Instruct-v0.1") -> Dict:
-        """
-        Generate narrative using HuggingFace Inference API.
-        
-        Args:
-            prompt: Structured prompt for narrative generation
-            model: HuggingFace model ID
-            
-        Returns:
-            Dictionary with narrative and metadata
-        """
+        """Generate narrative using HuggingFace."""
         start_time = time.time()
         
         try:
             response = self.clients['huggingface'].chat_completion(
                 messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert sales analytics director."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
+                    {"role": "system", "content": "You are an expert sales analytics director."},
+                    {"role": "user", "content": prompt}
                 ],
                 model=model,
                 max_tokens=2048,
@@ -259,42 +232,47 @@ class MultiLLMNarrativeGenerator:
             }
     
     def generate_all_narratives(self, prompt: str) -> Dict[str, Dict]:
-        """
-        Generate narratives using all available LLMs.
-        
-        Args:
-            prompt: Structured prompt for narrative generation
-            
-        Returns:
-            Dictionary of all generated narratives with metadata
-        """
+        """Generate narratives using all available LLMs."""
         print("\n🚀 Starting Multi-LLM Narrative Generation...\n")
         
         results = {}
         
-        # Generate with each LLM
         if 'gemini' in self.clients:
             print("📝 Generating with Gemini 2.0 Flash...")
             results['gemini'] = self.generate_with_gemini(prompt)
-            print(f"   ✓ Completed in {results['gemini']['generation_time']}s\n")
+            if results['gemini']['success']:
+                print(f"   ✓ Completed in {results['gemini']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['gemini']['error']}\n")
         
         if 'cohere' in self.clients:
             print("📝 Generating with Cohere Command R+...")
             results['cohere'] = self.generate_with_cohere(prompt)
-            print(f"   ✓ Completed in {results['cohere']['generation_time']}s\n")
+            if results['cohere']['success']:
+                print(f"   ✓ Completed in {results['cohere']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['cohere']['error']}\n")
         
         if 'groq' in self.clients:
             print("📝 Generating with Groq Llama 3.1...")
             results['groq'] = self.generate_with_groq(prompt)
-            print(f"   ✓ Completed in {results['groq']['generation_time']}s\n")
+            if results['groq']['success']:
+                print(f"   ✓ Completed in {results['groq']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['groq']['error']}\n")
         
         if 'huggingface' in self.clients:
             print("📝 Generating with HuggingFace Mixtral...")
             results['huggingface'] = self.generate_with_huggingface(prompt)
-            print(f"   ✓ Completed in {results['huggingface']['generation_time']}s\n")
+            if results['huggingface']['success']:
+                print(f"   ✓ Completed in {results['huggingface']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['huggingface']['error']}\n")
         
         self.narratives = results
-        print("✅ All narratives generated successfully!\n")
+        
+        successful = sum(1 for r in results.values() if r['success'])
+        print(f"✅ {successful}/{len(results)} narratives generated successfully!\n")
         
         return results
     
