@@ -14,20 +14,20 @@ class SalesStatisticalEngine:
     """
     
     def __init__(self, df):
-        self.df = df
+        self.df = df.copy()  # Work with a copy to avoid modifying original
         self.insights = {}
         
     def extract_kpis(self):
         """Calculate key sales performance indicators"""
         self.insights['KPIs'] = {
-            'Total Revenue': round(self.df['sales_amount'].sum(), 2),
+            'Total Revenue': float(round(self.df['sales_amount'].sum(), 2)),
             'Total Orders': int(len(self.df)),
-            'Average Order Value': round(self.df['sales_amount'].mean(), 2),
+            'Average Order Value': float(round(self.df['sales_amount'].mean(), 2)),
             'Total Units Sold': int(self.df['quantity'].sum()),
             'Unique Customers': int(self.df['customer_id'].nunique()),
-            'Average Revenue Per Customer': round(
+            'Average Revenue Per Customer': float(round(
                 self.df.groupby('customer_id')['sales_amount'].sum().mean(), 2
-            ),
+            )),
             'Total Products Sold': int(self.df['product_id'].nunique())
         }
         return self.insights['KPIs']
@@ -51,15 +51,18 @@ class SalesStatisticalEngine:
         model = LinearRegression().fit(X, y)
         trend_slope = model.coef_[0]
         
+        # Convert Period index to string for JSON serialization
+        monthly_sales_dict = {str(k): float(v) for k, v in monthly_sales.items()}
+        
         self.insights['Trends'] = {
-            'Monthly Sales': monthly_sales.to_dict(),
-            'Average Monthly Growth (%)': round(growth_rates.mean(), 2),
+            'Monthly Sales': monthly_sales_dict,
+            'Average Monthly Growth (%)': float(round(growth_rates.mean(), 2)),
             'Trend Direction': 'Upward' if trend_slope > 0 else 'Downward',
-            'Trend Strength': round(abs(trend_slope), 2),
+            'Trend Strength': float(round(abs(trend_slope), 2)),
             'Best Month': str(monthly_sales.idxmax()),
             'Worst Month': str(monthly_sales.idxmin()),
-            'Peak Sales': round(monthly_sales.max(), 2),
-            'Lowest Sales': round(monthly_sales.min(), 2)
+            'Peak Sales': float(round(monthly_sales.max(), 2)),
+            'Lowest Sales': float(round(monthly_sales.min(), 2))
         }
         return self.insights['Trends']
     
@@ -74,17 +77,22 @@ class SalesStatisticalEngine:
         category_perf.columns = ['_'.join(col) for col in category_perf.columns]
         
         # Top products
-        top_products = self.df.groupby('product_name')['sales_amount'].sum(
-        ).nlargest(5)
+        top_products = self.df.groupby('product_name')['sales_amount'].sum().nlargest(5)
+        
+        # Convert to JSON-serializable format
+        category_dict = {}
+        for category in category_perf.index:
+            category_dict[category] = {
+                'Total Sales': float(category_perf.loc[category, 'sales_amount_sum']),
+                'Average Sale': float(category_perf.loc[category, 'sales_amount_mean']),
+                'Order Count': int(category_perf.loc[category, 'sales_amount_count']),
+                'Units Sold': int(category_perf.loc[category, 'quantity_sum'])
+            }
         
         self.insights['Product Performance'] = {
-            'Top Categories': category_perf.nlargest(
-                3, 'sales_amount_sum'
-            ).to_dict(),
-            'Top 5 Products': top_products.to_dict(),
-            'Category Distribution': self.df.groupby(
-                'product_category'
-            )['sales_amount'].sum().to_dict()
+            'Category Breakdown': category_dict,
+            'Top 5 Products': {str(k): float(v) for k, v in top_products.items()},
+            'Total Categories': int(self.df['product_category'].nunique())
         }
         return self.insights['Product Performance']
     
@@ -104,9 +112,14 @@ class SalesStatisticalEngine:
         })
         
         # RFM scoring
-        rfm['R_Score'] = pd.qcut(rfm['Recency'], 4, labels=[4,3,2,1])
-        rfm['F_Score'] = pd.qcut(rfm['Frequency'].rank(method='first'), 4, labels=[1,2,3,4])
-        rfm['M_Score'] = pd.qcut(rfm['Monetary'], 4, labels=[1,2,3,4])
+        rfm['R_Score'] = pd.qcut(rfm['Recency'], 4, labels=[4,3,2,1], duplicates='drop')
+        rfm['F_Score'] = pd.qcut(rfm['Frequency'].rank(method='first'), 4, labels=[1,2,3,4], duplicates='drop')
+        rfm['M_Score'] = pd.qcut(rfm['Monetary'], 4, labels=[1,2,3,4], duplicates='drop')
+        
+        # Convert to numeric for summing
+        rfm['R_Score'] = rfm['R_Score'].astype(int)
+        rfm['F_Score'] = rfm['F_Score'].astype(int)
+        rfm['M_Score'] = rfm['M_Score'].astype(int)
         rfm['RFM_Score'] = rfm[['R_Score', 'F_Score', 'M_Score']].sum(axis=1)
         
         # Segment classification
@@ -130,15 +143,26 @@ class SalesStatisticalEngine:
             'Monetary': ['mean', 'count']
         }).round(2)
         
+        # Convert to JSON-serializable format
+        segment_dict = {}
+        for segment in segment_summary.index:
+            segment_dict[segment] = {
+                'Average Recency (days)': float(segment_summary.loc[segment, ('Recency', 'mean')]),
+                'Average Frequency': float(segment_summary.loc[segment, ('Frequency', 'mean')]),
+                'Average Monetary': float(segment_summary.loc[segment, ('Monetary', 'mean')]),
+                'Customer Count': int(segment_summary.loc[segment, ('Monetary', 'count')])
+            }
+        
         self.insights['Customer Segmentation'] = {
+            'Segment Breakdown': segment_dict,
             'Segment Distribution': rfm['Segment'].value_counts().to_dict(),
-            'Segment Metrics': segment_summary.to_dict(),
-            'High Value Customers (%)': round(
+            'High Value Customers (%)': float(round(
                 (rfm['Segment'] == 'Champions').sum() / len(rfm) * 100, 2
-            ),
-            'At Risk Customers (%)': round(
+            )),
+            'At Risk Customers (%)': float(round(
                 (rfm['Segment'] == 'At Risk').sum() / len(rfm) * 100, 2
-            )
+            )),
+            'Total Customers Analyzed': int(len(rfm))
         }
         return self.insights['Customer Segmentation']
     
@@ -153,10 +177,20 @@ class SalesStatisticalEngine:
             
             regional.columns = ['_'.join(col) for col in regional.columns]
             
+            # Convert to JSON-serializable format
+            regional_dict = {}
+            for region in regional.index:
+                regional_dict[region] = {
+                    'Total Sales': float(regional.loc[region, 'sales_amount_sum']),
+                    'Average Sale': float(regional.loc[region, 'sales_amount_mean']),
+                    'Order Count': int(regional.loc[region, 'order_id_count']),
+                    'Unique Customers': int(regional.loc[region, 'customer_id_nunique'])
+                }
+            
             self.insights['Regional Performance'] = {
-                'Total Sales by Region': regional['sales_amount_sum'].to_dict(),
-                'Top Performing Region': regional['sales_amount_sum'].idxmax(),
-                'Regional Distribution': regional.to_dict()
+                'Regional Breakdown': regional_dict,
+                'Top Performing Region': str(regional['sales_amount_sum'].idxmax()),
+                'Total Regions': int(self.df['region'].nunique())
             }
         else:
             self.insights['Regional Performance'] = {'message': 'No regional data available'}
@@ -175,24 +209,39 @@ class SalesStatisticalEngine:
         
         anomalies = daily_sales[z_scores > 2]
         
+        # Convert to JSON-serializable format
+        anomaly_dict = {str(k): float(v) for k, v in anomalies.items()}
+        
         self.insights['Anomalies'] = {
-            'Unusual Sales Days': len(anomalies),
-            'Anomaly Dates': anomalies.to_dict(),
+            'Unusual Sales Days': int(len(anomalies)),
+            'Anomaly Dates': anomaly_dict,
             'Highest Spike': {
                 'Date': str(daily_sales.idxmax()),
-                'Amount': round(daily_sales.max(), 2)
-            }
+                'Amount': float(round(daily_sales.max(), 2))
+            },
+            'Average Daily Sales': float(round(mean_sales, 2)),
+            'Standard Deviation': float(round(std_sales, 2))
         }
         return self.insights['Anomalies']
     
     def generate_full_analysis(self):
         """Run complete statistical analysis pipeline"""
+        print("   → Extracting KPIs...")
         self.extract_kpis()
+        
+        print("   → Analyzing trends...")
         self.analyze_trends()
+        
+        print("   → Analyzing product performance...")
         self.analyze_product_performance()
+        
+        print("   → Segmenting customers...")
         self.analyze_customer_segments()
+        
+        print("   → Analyzing regional performance...")
         self.analyze_regional_performance()
+        
+        print("   → Detecting anomalies...")
         self.detect_anomalies()
         
         return self.insights
-    

@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 # LLM API imports
-from google import genai
+import google.generativeai as genai
 import cohere
 from groq import Groq
 from huggingface_hub import InferenceClient
@@ -30,11 +30,12 @@ class MultiLLMNarrativeGenerator:
     def _initialize_clients(self):
         """Initialize all LLM API clients"""
         
-        # Gemini 2.0 Flash
+            # Gemini 2.0 Flash
         if 'gemini' in self.api_keys:
-            os.environ["GEMINI_API_KEY"] = self.api_keys['gemini']
-            self.clients['gemini'] = genai.Client()
+            genai.configure(api_key=self.api_keys['gemini'])
+            self.clients['gemini'] = genai.GenerativeModel("gemini-2.0-flash")
             print("✓ Gemini 2.0 Flash initialized")
+
         
         # Cohere Command R+
         if 'cohere' in self.api_keys:

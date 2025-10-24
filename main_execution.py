@@ -1,6 +1,7 @@
 """
 GenAI Data Storytelling Pipeline - Complete Execution Script
 Research Paper: Sales Domain Implementation
+Optimized for Gemini API
 """
 
 import os
@@ -15,6 +16,7 @@ def main():
     print("\n" + "="*80)
     print("GENAI-POWERED DATA STORYTELLING RESEARCH IMPLEMENTATION")
     print("Domain: Sales Analytics")
+    print("Model: Google Gemini 2.0 Flash")
     print("="*80 + "\n")
     
     # ========================================================================
@@ -22,15 +24,20 @@ def main():
     # ========================================================================
     print("🔑 Step 1: Configure API Keys\n")
     
-    # Replace with your actual API keys
+    # Using only Gemini for this implementation
+    # Get your free Gemini API key from: https://ai.google.dev/
     API_KEYS = {
-        'gemini': os.getenv('GEMINI_API_KEY', 'your-gemini-api-key'),
-        'cohere': os.getenv('COHERE_API_KEY', 'your-cohere-api-key'),
-        'groq': os.getenv('GROQ_API_KEY', 'your-groq-api-key'),
-        'huggingface': os.getenv('HUGGINGFACE_API_KEY', 'your-huggingface-api-key')
+        'gemini': os.getenv('GEMINI_API_KEY', 'YOUR_GEMINI_API_KEY_HERE')
     }
     
-    print("   ✓ API keys configured\n")
+    # Validate API key
+    if API_KEYS['gemini'] == 'AIzaSyBqfOWU_R5NevAiKmRLIHD5HGICC5__-3w':
+        print("   ⚠️  WARNING: Please replace 'YOUR_GEMINI_API_KEY_HERE' with your actual Gemini API key")
+        print("   Get your free API key at: https://ai.google.dev/\n")
+        print("   Exiting...\n")
+        return None
+    
+    print("   ✓ Gemini API key configured\n")
     
     # ========================================================================
     # STEP 2: GENERATE SALES DATASET
@@ -72,11 +79,17 @@ def main():
         'strategic_priority': 'Revenue Growth & Customer Retention'
     }
     
-    results = pipeline.run_complete_pipeline(
-        data_path=DATASET_PATH,
-        report_type='executive_report',
-        context=business_context
-    )
+    try:
+        results = pipeline.run_complete_pipeline(
+            data_path=DATASET_PATH,
+            report_type='executive_report',
+            context=business_context
+        )
+    except Exception as e:
+        print(f"\n❌ Pipeline execution failed with error:\n{str(e)}\n")
+        import traceback
+        traceback.print_exc()
+        return None
     
     # ========================================================================
     # STEP 5: DISPLAY RESULTS SUMMARY
@@ -85,36 +98,73 @@ def main():
     print("📊 RESULTS SUMMARY")
     print("="*80 + "\n")
     
-    # Model comparison
-    comparison = results['evaluations']['comparison']
-    
-    print("🏆 Model Rankings:")
-    for ranking in comparison['rankings']:
-        print(f"   {ranking['rank']}. {ranking['model']}")
-        print(f"      Composite Score: {ranking['composite_score']}/100")
-        print(f"      Readability: {ranking['readability_score']}")
-        print(f"      Actionability: {ranking['actionability_score']}/100")
-        print(f"      Accuracy: {ranking['accuracy_rate']}%")
-        print(f"      Completeness: {ranking['completeness_score']}%\n")
-    
-    print("\n🎯 Best Models by Category:")
-    print(f"   Overall: {comparison['best_overall']}")
-    print(f"   Readability: {comparison['best_readability']}")
-    print(f"   Actionability: {comparison['best_actionability']}")
-    print(f"   Accuracy: {comparison['best_accuracy']}")
+    # Check if we have evaluations
+    if results['evaluations']['evaluations']:
+        comparison = results['evaluations']['comparison']
+        
+        print("🏆 Model Performance:\n")
+        for ranking in comparison.get('rankings', []):
+            print(f"   {ranking['rank']}. {ranking['model']}")
+            print(f"      └─ Composite Score: {ranking['composite_score']}/100")
+            print(f"      └─ Readability: {ranking['readability_score']:.1f} (Flesch)")
+            print(f"      └─ Actionability: {ranking['actionability_score']:.1f}/100")
+            print(f"      └─ Accuracy: {ranking['accuracy_rate']:.1f}%")
+            print(f"      └─ Completeness: {ranking['completeness_score']:.1f}%\n")
+        
+        print("\n🎯 Best Model:")
+        print(f"   Overall Winner: {comparison.get('best_overall', 'N/A')}")
+        
+    else:
+        print("⚠️  No evaluations generated. Check the status report for details.\n")
     
     print("\n" + "="*80)
     print("✅ RESEARCH IMPLEMENTATION COMPLETE")
     print("="*80 + "\n")
     
     print("📁 Generated Outputs:")
-    print(f"   - Statistical insights JSON")
-    print(f"   - Structured insights JSON")
-    print(f"   - {len(results['narratives'])} narrative markdown files")
-    print(f"   - Comprehensive evaluation JSON")
-    print(f"   - Model comparison report")
+    print(f"   ├─ Statistical insights JSON")
+    print(f"   ├─ Structured insights JSON")
+    
+    successful_narratives = sum(1 for n in results['narratives'].values() if n['success'])
+    print(f"   ├─ {successful_narratives} narrative markdown file(s)")
+    
+    if results['evaluations']['evaluations']:
+        print(f"   ├─ Comprehensive evaluation JSON")
+        print(f"   └─ Model comparison report")
+    else:
+        print(f"   └─ Status report (troubleshooting guide)")
     
     print(f"\n📂 All files saved in: research_outputs/\n")
+    
+    # ========================================================================
+    # STEP 6: RESEARCH PAPER GUIDANCE
+    # ========================================================================
+    print("=" * 80)
+    print("📝 NEXT STEPS FOR YOUR RESEARCH PAPER")
+    print("=" * 80 + "\n")
+    
+    print("Your implementation is now complete! Use these outputs:\n")
+    print("1. **Methodology Section:**")
+    print("   - Reference the 7-component pipeline architecture")
+    print("   - Explain statistical analysis metrics (KPIs, trends, segmentation)")
+    print("   - Describe prompt engineering framework\n")
+    
+    print("2. **Results Section:**")
+    print("   - Include model comparison table from the report")
+    print("   - Add charts for readability, actionability, accuracy scores")
+    print("   - Show example narrative excerpts\n")
+    
+    print("3. **Discussion Section:**")
+    print("   - Analyze which quality metrics matter most for business")
+    print("   - Compare LLM performance patterns")
+    print("   - Discuss prompt engineering impact\n")
+    
+    print("4. **Visualizations to Create:**")
+    print("   - Bar chart: Composite scores by model")
+    print("   - Radar chart: Multi-dimensional quality comparison")
+    print("   - Heatmap: Metric correlation analysis\n")
+    
+    print("Good luck with your research paper! 🎓\n")
     
     return results
 
