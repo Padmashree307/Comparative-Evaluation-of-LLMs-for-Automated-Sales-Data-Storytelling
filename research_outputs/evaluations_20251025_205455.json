@@ -1,0 +1,264 @@
+{
+  "evaluations": {
+    "groq": {
+      "model": "groq",
+      "word_count": 593,
+      "character_count": 4009,
+      "readability": {
+        "flesch_reading_ease": 32.39,
+        "flesch_kincaid_grade": 12.68,
+        "gunning_fog": 16.51,
+        "automated_readability_index": 13.58,
+        "coleman_liau_index": 14.25,
+        "readability_assessment": "Needs improvement"
+      },
+      "actionability": {
+        "actionability_score": 100,
+        "action_verbs_count": 11,
+        "specific_metrics_count": 76,
+        "timeframes_mentioned": 17,
+        "has_recommendation_section": true,
+        "assessment": "High"
+      },
+      "statistical_accuracy": {
+        "accuracy_rate": 30.26,
+        "total_numbers_in_narrative": 76,
+        "matched_numbers": 23,
+        "assessment": "Low"
+      },
+      "completeness": {
+        "completeness_score": 100.0,
+        "covered_themes": [
+          "revenue",
+          "sales",
+          "customer",
+          "product",
+          "trend",
+          "growth",
+          "performance",
+          "recommendation"
+        ],
+        "missing_themes": [],
+        "has_kpis": true,
+        "has_trends": true,
+        "has_segments": true,
+        "has_recommendations": true,
+        "assessment": "Complete"
+      },
+      "composite_quality_score": 69.52
+    }
+  },
+  "comparison": {
+    "rankings": [
+      {
+        "rank": 1,
+        "model": "groq",
+        "composite_score": 69.52,
+        "readability_score": 32.39,
+        "actionability_score": 100,
+        "accuracy_rate": 30.26,
+        "completeness_score": 100.0
+      }
+    ],
+    "best_overall": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 593,
+        "character_count": 4009,
+        "readability": {
+          "flesch_reading_ease": 32.39,
+          "flesch_kincaid_grade": 12.68,
+          "gunning_fog": 16.51,
+          "automated_readability_index": 13.58,
+          "coleman_liau_index": 14.25,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 11,
+          "specific_metrics_count": 76,
+          "timeframes_mentioned": 17,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 30.26,
+          "total_numbers_in_narrative": 76,
+          "matched_numbers": 23,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "composite_quality_score": 69.52
+      }
+    ],
+    "best_readability": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 593,
+        "character_count": 4009,
+        "readability": {
+          "flesch_reading_ease": 32.39,
+          "flesch_kincaid_grade": 12.68,
+          "gunning_fog": 16.51,
+          "automated_readability_index": 13.58,
+          "coleman_liau_index": 14.25,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 11,
+          "specific_metrics_count": 76,
+          "timeframes_mentioned": 17,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 30.26,
+          "total_numbers_in_narrative": 76,
+          "matched_numbers": 23,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "composite_quality_score": 69.52
+      }
+    ],
+    "best_actionability": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 593,
+        "character_count": 4009,
+        "readability": {
+          "flesch_reading_ease": 32.39,
+          "flesch_kincaid_grade": 12.68,
+          "gunning_fog": 16.51,
+          "automated_readability_index": 13.58,
+          "coleman_liau_index": 14.25,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 11,
+          "specific_metrics_count": 76,
+          "timeframes_mentioned": 17,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 30.26,
+          "total_numbers_in_narrative": 76,
+          "matched_numbers": 23,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "composite_quality_score": 69.52
+      }
+    ],
+    "best_accuracy": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 593,
+        "character_count": 4009,
+        "readability": {
+          "flesch_reading_ease": 32.39,
+          "flesch_kincaid_grade": 12.68,
+          "gunning_fog": 16.51,
+          "automated_readability_index": 13.58,
+          "coleman_liau_index": 14.25,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 11,
+          "specific_metrics_count": 76,
+          "timeframes_mentioned": 17,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 30.26,
+          "total_numbers_in_narrative": 76,
+          "matched_numbers": 23,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "composite_quality_score": 69.52
+      }
+    ]
+  }
+}

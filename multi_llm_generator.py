@@ -129,7 +129,7 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
 
-    def generate_with_cohere(self, prompt: str, model: str = "command") -> Dict:
+    def generate_with_cohere(self, prompt: str, model: str = "command-r-plus-08-2024") -> Dict:
         """Generate narrative using Cohere Command."""
         start_time = time.time()
         try:
@@ -144,7 +144,7 @@ class MultiLLMNarrativeGenerator:
             generation_time = time.time() - start_time
             
             return {
-                'model': 'Cohere Command',
+                'model': 'Cohere Command R Plus',
                 'narrative': narrative,
                 'generation_time': round(generation_time, 2),
                 'timestamp': datetime.now().isoformat(),
@@ -154,7 +154,7 @@ class MultiLLMNarrativeGenerator:
             }
         except Exception as e:
             return {
-                'model': 'Cohere Command',
+                'model': 'Cohere Command R Plus',
                 'narrative': None,
                 'generation_time': time.time() - start_time,
                 'timestamp': datetime.now().isoformat(),
