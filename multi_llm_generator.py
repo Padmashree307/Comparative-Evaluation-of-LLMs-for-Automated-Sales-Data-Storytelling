@@ -204,27 +204,66 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
 
-    def generate_with_huggingface(self, prompt: str, model: str = "meta-llama/Llama-3.2-3B-Instruct") -> Dict:
-        """Generate narrative using HuggingFace Inference API."""
+   
+
+    def generate_with_huggingface(self, prompt: str, model: str = "distilgpt2") -> Dict:
+        """Generate narrative using HuggingFace Inference API.
+        Using DistilGPT2 (free, no authentication required).
+        """
         start_time = time.time()
         try:
             API_URL = f"https://api-inference.huggingface.co/models/{model}"
-            headers = {"Authorization": f"Bearer {self.api_keys['huggingface']}"}
-            
+        
+            # Simple payload - no auth required for public models
             payload = {
-                "inputs": f"<|system|>You are an expert sales analytics director creating executive business reports.</s>\n<|user|>{prompt}</s>\n<|assistant|>",
+                "inputs": f"Executive Sales Report:\n{prompt[:500]}\n\nSummary:",
                 "parameters": {
-                    "max_new_tokens": 2048,
+                    "max_new_tokens": 300,
                     "temperature": 0.7,
-                    "top_p": 0.95,
-                    "return_full_text": False,
-                    "do_sample": True
-                },
-                "options": {
-                    "wait_for_model": True,
-                    "use_cache": False
+                    "return_full_text": False
                 }
             }
+        
+            # No authorization header needed for public models
+            response = requests.post(API_URL, json=payload, timeout=60)
+        
+            if response.status_code == 200:
+                result = response.json()
+            
+                if isinstance(result, list) and len(result) > 0:
+                    narrative = result[0].get('generated_text', str(result[0]))
+                elif isinstance(result, dict):
+                    narrative = result.get('generated_text', str(result))
+                else:
+                    narrative = str(result)
+            
+                generation_time = time.time() - start_time
+            
+                return {
+                    'model': 'HuggingFace DistilGPT2',
+                    'narrative': narrative,
+                    'generation_time': round(generation_time, 2),
+                    'timestamp': datetime.now().isoformat(),
+                    'success': True,
+                    'token_count': len(narrative.split()),
+                    'error': None
+                }
+            else:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+            
+        except Exception as e:
+            return {
+                'model': 'HuggingFace DistilGPT2',
+                'narrative': None,
+                'generation_time': time.time() - start_time,
+                'timestamp': datetime.now().isoformat(),
+                'success': False,
+                'error': str(e)
+            }
+
+
+
+    
             
             response = requests.post(API_URL, headers=headers, json=payload, timeout=180)
             
