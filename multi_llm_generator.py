@@ -9,6 +9,8 @@ from google.genai import types
 import cohere
 from groq import Groq
 from huggingface_hub import InferenceClient
+from constants import GOOGLE_API_KEY
+
 
 class MultiLLMNarrativeGenerator:
     """
@@ -23,6 +25,7 @@ class MultiLLMNarrativeGenerator:
         Args:
             api_keys: Dictionary with keys 'gemini', 'cohere', 'groq', 'huggingface'
         """
+        self.grmini_api = GOOGLE_API_KEY
         self.api_keys = api_keys
         self.clients = {}
         self.narratives = {}

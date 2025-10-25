@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, List
 import os
 import traceback
+from dotenv import load_dotenv
 
 from sales_statistical_engine import SalesStatisticalEngine
 from insight_structuring import InsightStructurer
@@ -21,6 +22,7 @@ class GenAIStorytellingPipeline:
         """
         Initialize the complete pipeline.
         """
+        load_dotenv()
         self.api_keys = api_keys or {}
         self.output_dir = output_dir
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
