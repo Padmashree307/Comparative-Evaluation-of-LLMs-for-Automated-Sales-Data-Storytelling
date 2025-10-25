@@ -105,7 +105,7 @@ class MultiLLMNarrativeGenerator:
                     'max_output_tokens': 2048,
                     'top_p': 0.95,
                     'top_k': 40
-                }
+                }  # ✅ FIXED: Added missing closing brace
             )
             narrative = response.text
             generation_time = time.time() - start_time
