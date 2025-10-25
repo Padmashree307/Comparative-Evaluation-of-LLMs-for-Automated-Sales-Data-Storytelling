@@ -32,7 +32,7 @@ class GenAIStorytellingPipeline:
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
         
-        # Validate API keys (simple heuristic)
+        # Validate API keys
         def _is_valid_key(k: str) -> bool:
             if not k:
                 return False
@@ -43,8 +43,8 @@ class GenAIStorytellingPipeline:
         self.api_keys_valid = all(_is_valid_key(v) for v in self.api_keys.values())
         
         if not self.api_keys_valid:
-            print(" ⚠️ One or more API keys appear invalid or placeholder values were used.")
-            print(" ⚠️ Generation with external LLMs will be skipped - status report will be produced.")
+            print(" ⚠️  One or more API keys appear invalid or placeholder values were used.")
+            print(" ⚠️  Generation with external LLMs will be skipped - status report will be produced.")
         
         # Pipeline components
         self.statistical_engine = None
@@ -58,11 +58,11 @@ class GenAIStorytellingPipeline:
         self.insights = {}
         self.structured_insights = {}
         self.prompts: Dict[str, str] = {}
-        self.narratives: Dict[str, Dict] = {}  # ✅ Initialize as empty dict
-        self.evaluations: Dict[str, Dict] = {}  # ✅ Initialize as empty dict
+        self.narratives: Dict[str, Dict] = {}
+        self.evaluations: Dict[str, Dict] = {}
 
     def load_data(self, data_path: str) -> pd.DataFrame:
-        """Load CSV data into a pandas DataFrame and store as raw_data."""
+        """Load CSV data into a pandas DataFrame."""
         print(f" 📂 Loading data from {data_path}...")
         
         if not os.path.exists(data_path):
@@ -89,13 +89,13 @@ class GenAIStorytellingPipeline:
                 json.dump(self.insights, f, indent=2, default=str)
             print(f" ✓ Insights saved to {insights_path}\n")
         except Exception:
-            print(" ⚠️ Failed to save insights file.\n")
+            print(" ⚠️  Failed to save insights file.\n")
         
         return self.insights
 
     def structure_insights(self) -> Dict:
         """Structure and organize insights."""
-        print(" 🏗️ Structuring Insights...")
+        print(" 🏗️  Structuring Insights...")
         
         self.insight_structurer = InsightStructurer(self.insights)
         self.structured_insights = self.insight_structurer.generate_structured_output()
@@ -109,7 +109,7 @@ class GenAIStorytellingPipeline:
                 json.dump(self.structured_insights, f, indent=2, default=str)
             print(f" ✓ Structured insights saved to {structured_path}\n")
         except Exception:
-            print(" ⚠️ Failed to save structured insights file.\n")
+            print(" ⚠️  Failed to save structured insights file.\n")
         
         return self.structured_insights
 
@@ -118,7 +118,7 @@ class GenAIStorytellingPipeline:
         if report_types is None:
             report_types = ['executive_report']
         
-        print(" ✍️ Generating Domain-Specific Prompts...")
+        print(" ✍️  Generating Domain-Specific Prompts...")
         
         for report_type in report_types:
             prompt = self.prompt_engineer.generate_prompt(
@@ -150,8 +150,8 @@ class GenAIStorytellingPipeline:
                     'content': None
                 } for mk in model_keys
             }
-            print(f" ⚠️ Skipped generation because API keys are invalid.")
-            print(f" ⚠️ Created failure placeholders for: {', '.join(self.narratives.keys())}\n")
+            print(f" ⚠️  Skipped generation because API keys are invalid.")
+            print(f" ⚠️  Created failure placeholders for: {', '.join(self.narratives.keys())}\n")
             return self.narratives
         
         # CASE 2: Normal generation path
@@ -173,11 +173,11 @@ class GenAIStorytellingPipeline:
                 } for mk in model_keys
             }
         
-        # ✅ ENSURE self.narratives is always a dict
+        # ENSURE self.narratives is always a dict
         if self.narratives is None:
             self.narratives = {}
         
-        # ✅ SAFE ACCESS to narratives values
+        # SAFE ACCESS to narratives values
         successful_narratives = [n for n in self.narratives.values() if n.get('success')]
         failed_narratives = [n for n in self.narratives.values() if not n.get('success')]
         
@@ -186,7 +186,7 @@ class GenAIStorytellingPipeline:
         print(f" ✗ Failed: {len(failed_narratives)}")
         
         if failed_narratives:
-            print(f"\n ⚠️ Failed Models:")
+            print(f"\n ⚠️  Failed Models:")
             for n in failed_narratives:
                 print(f" - {n.get('model', 'unknown')}: {n.get('error', 'Unknown error')}")
         print()
@@ -197,11 +197,11 @@ class GenAIStorytellingPipeline:
                 out_path = os.path.join(self.output_dir, f"{model_key}_{self.timestamp}.md")
                 with open(out_path, 'w', encoding='utf-8') as fh:
                     if narrative_data.get('success'):
-                        fh.write(narrative_data.get('content', ''))
+                        fh.write(narrative_data.get('narrative', ''))
                     else:
                         fh.write(f"# Generation failed for {model_key}\n\n{narrative_data.get('error')}")
             except Exception:
-                print(f" ⚠️ Failed to save narrative file for {model_key}")
+                print(f" ⚠️  Failed to save narrative file for {model_key}")
         
         return self.narratives
 
@@ -209,18 +209,18 @@ class GenAIStorytellingPipeline:
         """Evaluate all generated narratives."""
         print(" 🎯 Evaluating Narrative Quality...\n")
         
-        # ✅ ENSURE evaluations exists
+        # ENSURE evaluations exists
         self.evaluations = {}
         
-        # ✅ SAFE CHECK for successful narratives
+        # SAFE CHECK for successful narratives
         if not self.narratives or not isinstance(self.narratives, dict):
-            print(" ⚠️ No narratives available to evaluate\n")
+            print(" ⚠️  No narratives available to evaluate\n")
             return {'evaluations': self.evaluations, 'comparison': {}}
         
         successful_narratives = {k: v for k, v in self.narratives.items() if v.get('success')}
         
         if not successful_narratives:
-            print(" ⚠️ No successful narratives to evaluate\n")
+            print(" ⚠️  No successful narratives to evaluate\n")
             
             # Generate a status report
             status_path = os.path.join(self.output_dir, f"status_report_{self.timestamp}.md")
@@ -231,7 +231,7 @@ class GenAIStorytellingPipeline:
                 print(f" 📄 No evaluations available - generating error report")
                 print(f" ✓ Status report saved to {status_path}\n")
             except Exception:
-                print(" ⚠️ Failed to write status report.\n")
+                print(" ⚠️  Failed to write status report.\n")
             
             return {'evaluations': self.evaluations, 'comparison': {}}
         
@@ -252,7 +252,7 @@ class GenAIStorytellingPipeline:
         for model_key, narrative_data in successful_narratives.items():
             try:
                 eval_result = self.quality_evaluator.evaluate_narrative(
-                    narrative_data['content'],
+                    narrative_data['narrative'],
                     model_key
                 )
                 eval_result['model'] = model_key
@@ -281,30 +281,29 @@ class GenAIStorytellingPipeline:
                 )
             print(f" ✓ Evaluation results saved to {eval_path}\n")
         except Exception:
-            print(" ⚠️ Failed to save evaluation results.\n")
+            print(" ⚠️  Failed to save evaluation results.\n")
         
         return {'evaluations': self.evaluations, 'comparison': comparison}
 
     def generate_comparison_report(self) -> str:
         """Generate a comprehensive comparison report."""
-        # ... (rest of the method stays the same, just ensure safe dict access)
-        # I'll provide the key fix:
-        
         if not self.evaluations:
             report = f"# GenAI Data Storytelling Pipeline - Status Report\n\n"
             report += f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
             report += "**Status**: No successful narrative evaluations\n\n"
-            # ... rest of status report logic
             return report
         
         # Normal comparison report path
         try:
             comparison = self.quality_evaluator.compare_models()
         except Exception as e:
-            print(f" ⚠️ Failed to generate comparison: {e}")
+            print(f" ⚠️  Failed to generate comparison: {e}")
             comparison = {}
         
-        # ... continue with report generation
+        report = f"# GenAI Data Storytelling Pipeline - Model Comparison Report\n\n"
+        report += f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        report += f"**Models Evaluated**: {len(self.evaluations)}\n\n"
+        
         return report
 
     def run_complete_pipeline(
@@ -313,3 +312,44 @@ class GenAIStorytellingPipeline:
         report_type: str = 'executive_report',
         context: Dict = None
     ) -> Dict:
+        """Execute the complete end-to-end pipeline."""
+        print("\n" + "=" * 80)
+        print("STARTING COMPLETE GENAI DATA STORYTELLING PIPELINE")
+        print("=" * 80 + "\n")
+        
+        # Step 1: Load Data
+        self.load_data(data_path)
+        
+        # Step 2: Statistical Analysis
+        self.run_statistical_analysis()
+        
+        # Step 3: Structure Insights
+        self.structure_insights()
+        
+        # Step 4: Generate Prompts
+        self.generate_prompts(report_types=[report_type], context=context)
+        
+        # Step 5: Generate Narratives
+        self.generate_narratives(prompt_type=report_type)
+        
+        # Step 6: Evaluate Narratives
+        eval_results = self.evaluate_narratives()
+        
+        # Step 7: Generate Comparison Report
+        try:
+            comparison_report = self.generate_comparison_report()
+        except Exception as e:
+            print(f" ⚠️  Comparison report generation skipped due to error: {e}")
+            comparison_report = eval_results.get('comparison', {})
+        
+        print("\n" + "=" * 80)
+        print("PIPELINE EXECUTION COMPLETE")
+        print("=" * 80 + "\n")
+        
+        return {
+            'insights': self.insights,
+            'structured_insights': self.structured_insights,
+            'narratives': self.narratives,
+            'evaluations': eval_results,
+            'comparison_report': comparison_report
+        }

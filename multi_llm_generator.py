@@ -9,7 +9,7 @@ import time
 from datetime import datetime
 import requests
 
-# LLM API imports
+# LLM API imports with error handling
 try:
     import google.generativeai as genai
 except ImportError:
@@ -94,9 +94,7 @@ class MultiLLMNarrativeGenerator:
             print("   ✗ HuggingFace library not installed (pip install huggingface-hub)")
 
     def generate_with_gemini(self, prompt: str, model: str = "gemini-2.0-flash-exp") -> Dict:
-        """
-        Generate narrative using Google Gemini.
-        """
+        """Generate narrative using Google Gemini."""
         start_time = time.time()
         try:
             model_instance = self.clients['gemini'].GenerativeModel(model)
@@ -132,10 +130,7 @@ class MultiLLMNarrativeGenerator:
             }
 
     def generate_with_cohere(self, prompt: str, model: str = "command") -> Dict:
-        """
-        Generate narrative using Cohere Command.
-        Using base 'command' model (command-r and command-r-plus are deprecated)
-        """
+        """Generate narrative using Cohere Command."""
         start_time = time.time()
         try:
             response = self.clients['cohere'].chat(
@@ -168,9 +163,7 @@ class MultiLLMNarrativeGenerator:
             }
 
     def generate_with_groq(self, prompt: str, model: str = "llama-3.3-70b-versatile") -> Dict:
-        """
-        Generate narrative using Groq Llama 3.3.
-        """
+        """Generate narrative using Groq Llama 3.3."""
         start_time = time.time()
         try:
             response = self.clients['groq'].chat.completions.create(
@@ -212,13 +205,9 @@ class MultiLLMNarrativeGenerator:
             }
 
     def generate_with_huggingface(self, prompt: str, model: str = "meta-llama/Llama-3.2-3B-Instruct") -> Dict:
-        """
-        Generate narrative using HuggingFace Inference API.
-        Using Llama 3.2 3B Instruct (publicly accessible, no gating)
-        """
+        """Generate narrative using HuggingFace Inference API."""
         start_time = time.time()
         try:
-            # Direct API call with requests (more reliable than InferenceClient)
             API_URL = f"https://api-inference.huggingface.co/models/{model}"
             headers = {"Authorization": f"Bearer {self.api_keys['huggingface']}"}
             
@@ -242,7 +231,6 @@ class MultiLLMNarrativeGenerator:
             if response.status_code == 200:
                 result = response.json()
                 
-                # Extract generated text
                 if isinstance(result, list) and len(result) > 0:
                     narrative = result[0].get('generated_text', str(result[0]))
                 elif isinstance(result, dict):
@@ -275,11 +263,64 @@ class MultiLLMNarrativeGenerator:
             }
 
     def generate_all_narratives(self, prompt: str) -> Dict[str, Dict]:
-        """
-        Generate narratives using all available LLMs.
-        """
+        """Generate narratives using all available LLMs."""
         print("\n🚀 Starting Multi-LLM Narrative Generation...\n")
         results = {}
         
         if 'gemini' in self.clients:
-            print
+            print("⏳ Generating with Gemini 2.0 Flash...")
+            results['gemini'] = self.generate_with_gemini(prompt)
+            if results['gemini']['success']:
+                print(f"   ✓ Completed in {results['gemini']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['gemini']['error']}\n")
+        
+        if 'cohere' in self.clients:
+            print("⏳ Generating with Cohere Command...")
+            results['cohere'] = self.generate_with_cohere(prompt)
+            if results['cohere']['success']:
+                print(f"   ✓ Completed in {results['cohere']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['cohere']['error']}\n")
+        
+        if 'groq' in self.clients:
+            print("⏳ Generating with Groq Llama 3.3...")
+            results['groq'] = self.generate_with_groq(prompt)
+            if results['groq']['success']:
+                print(f"   ✓ Completed in {results['groq']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['groq']['error']}\n")
+        
+        if 'huggingface' in self.clients:
+            print("⏳ Generating with HuggingFace Llama 3.2...")
+            results['huggingface'] = self.generate_with_huggingface(prompt)
+            if results['huggingface']['success']:
+                print(f"   ✓ Completed in {results['huggingface']['generation_time']}s\n")
+            else:
+                print(f"   ✗ Failed: {results['huggingface']['error']}\n")
+        
+        self.narratives = results
+        successful = sum(1 for r in results.values() if r['success'])
+        print(f"✅ {successful}/{len(results)} narratives generated successfully!\n")
+        
+        return results
+
+    def get_generation_summary(self) -> Dict:
+        """Get summary statistics of narrative generation"""
+        if not self.narratives:
+            return {'error': 'No narratives generated yet'}
+        
+        successful = [n for n in self.narratives.values() if n['success']]
+        failed = [n for n in self.narratives.values() if not n['success']]
+        
+        return {
+            'total_models': len(self.narratives),
+            'successful_generations': len(successful),
+            'failed_generations': len(failed),
+            'average_generation_time': round(
+                sum(n['generation_time'] for n in successful) / len(successful) if successful else 0, 2
+            ),
+            'total_tokens_generated': sum(n.get('token_count', 0) for n in successful),
+            'fastest_model': min(successful, key=lambda x: x['generation_time'])['model'] if successful else None,
+            'slowest_model': max(successful, key=lambda x: x['generation_time'])['model'] if successful else None
+        }
