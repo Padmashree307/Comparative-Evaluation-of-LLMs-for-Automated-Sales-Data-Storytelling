@@ -192,27 +192,32 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
     
-    def generate_with_huggingface(self, prompt: str, 
-                                  model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct") -> Dict:
-        """Generate narrative using HuggingFace."""
+    def generate_with_huggingface(self, prompt: str,model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct") -> Dict:
+        """Generate narrative using HuggingFace Serverless Inference API."""
         start_time = time.time()
         
         try:
-            response = self.clients['huggingface'].chat_completion(
-                messages=[
-                    {"role": "system", "content": "You are an expert sales analytics director."},
-                    {"role": "user", "content": prompt}
-                ],
+            # FIXED: Use text_generation instead of chat_completion
+            response = self.clients['huggingface'].text_generation(
+                prompt=f"You are an expert sales analytics director.\n\n{prompt}",
                 model=model,
-                max_tokens=2048,
-                temperature=0.7
+                max_new_tokens=2048,
+                temperature=0.7,
+                top_p=0.95,
+                repetition_penalty=1.1,
+                return_full_text=False
             )
-            
-            narrative = response.choices[0].message.content
+        
+            # Extract the generated text
+            if isinstance(response, str):
+                narrative = response
+            else:
+                narrative = response.generated_text if hasattr(response, 'generated_text') else str(response)
+        
             generation_time = time.time() - start_time
-            
+        
             return {
-                'model': 'HuggingFace Mixtral-8x7B',
+                'model': 'HuggingFace Llama 3.1-8B',
                 'narrative': narrative,
                 'generation_time': round(generation_time, 2),
                 'timestamp': datetime.now().isoformat(),
@@ -220,16 +225,17 @@ class MultiLLMNarrativeGenerator:
                 'token_count': len(narrative.split()),
                 'error': None
             }
-            
+        
         except Exception as e:
             return {
-                'model': 'HuggingFace Mixtral-8x7B',
+                'model': 'HuggingFace Llama 3.1-8B',
                 'narrative': None,
                 'generation_time': time.time() - start_time,
                 'timestamp': datetime.now().isoformat(),
                 'success': False,
                 'error': str(e)
             }
+
     
     def generate_all_narratives(self, prompt: str) -> Dict[str, Dict]:
         """Generate narratives using all available LLMs."""
