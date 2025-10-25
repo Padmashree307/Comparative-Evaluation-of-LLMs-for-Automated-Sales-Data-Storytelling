@@ -306,12 +306,7 @@ class GenAIStorytellingPipeline:
         
         return report
 
-    def run_complete_pipeline(
-        self,
-        data_path: str,
-        report_type: str = 'executive_report',
-        context: Dict = None
-    ) -> Dict:
+    def run_complete_pipeline(self,data_path: str,report_type: str = 'executive_report',context: Dict = None) -> Dict:
         """Execute the complete end-to-end pipeline."""
         print("\n" + "=" * 80)
         print("STARTING COMPLETE GENAI DATA STORYTELLING PIPELINE")
