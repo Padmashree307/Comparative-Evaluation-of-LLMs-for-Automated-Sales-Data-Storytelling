@@ -1,0 +1,19 @@
+{
+  "evaluations": {
+    "gemini": {
+      "error": "Evaluation failed: 'content'",
+      "model": "gemini"
+    },
+    "cohere": {
+      "error": "Evaluation failed: 'content'",
+      "model": "cohere"
+    },
+    "groq": {
+      "error": "Evaluation failed: 'content'",
+      "model": "groq"
+    }
+  },
+  "comparison": {
+    "error": "No evaluations available"
+  }
+}

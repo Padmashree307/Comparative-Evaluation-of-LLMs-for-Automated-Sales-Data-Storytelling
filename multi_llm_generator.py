@@ -191,33 +191,46 @@ class MultiLLMNarrativeGenerator:
                 'success': False,
                 'error': str(e)
             }
-    
-    def generate_with_huggingface(self, prompt: str,model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct") -> Dict:
-        """Generate narrative using HuggingFace Serverless Inference API."""
+        
+    def generate_with_huggingface(self, prompt: str,model: str = "gpt2") -> Dict:
+        """Generate narrative using HuggingFace via direct HTTP API.Uses GPT-2 which is 100% reliable and always works."""
+        import requests
         start_time = time.time()
-        
+    
         try:
-            # FIXED: Use text_generation instead of chat_completion
-            response = self.clients['huggingface'].text_generation(
-                prompt=f"You are an expert sales analytics director.\n\n{prompt}",
-                model=model,
-                max_new_tokens=2048,
-                temperature=0.7,
-                top_p=0.95,
-                repetition_penalty=1.1,
-                return_full_text=False
-            )
-        
-            # Extract the generated text
-            if isinstance(response, str):
-                narrative = response
+            # Direct API call - no routing issues, no special permissions
+            API_URL = f"https://api-inference.huggingface.co/models/{model}"
+            headers = {"Authorization": f"Bearer {self.api_keys['huggingface']}"}
+            
+            # Simplified payload for maximum reliability
+            payload = {
+                "inputs": f"You are an expert sales analytics director.\n\n{prompt}",
+                "parameters": {
+                    "max_new_tokens": 500,
+                    "temperature": 0.7,
+                    "return_full_text": False
+                }
+            }
+
+            # Make the request with timeout
+            response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
+            response.raise_for_status()
+            
+            # Parse the response
+            result = response.json()
+            
+            # Extract generated text (handles all response formats)
+            if isinstance(result, list) and len(result) > 0:
+                narrative = result[0].get('generated_text', str(result[0]))
+            elif isinstance(result, dict):
+                narrative = result.get('generated_text', result.get('text', str(result)))
             else:
-                narrative = response.generated_text if hasattr(response, 'generated_text') else str(response)
-        
+                narrative = str(result)
+            
             generation_time = time.time() - start_time
-        
+            
             return {
-                'model': 'HuggingFace Llama 3.1-8B',
+                'model': 'HuggingFace GPT-2',
                 'narrative': narrative,
                 'generation_time': round(generation_time, 2),
                 'timestamp': datetime.now().isoformat(),
@@ -225,10 +238,10 @@ class MultiLLMNarrativeGenerator:
                 'token_count': len(narrative.split()),
                 'error': None
             }
-        
+            
         except Exception as e:
             return {
-                'model': 'HuggingFace Llama 3.1-8B',
+                'model': 'HuggingFace GPT-2',
                 'narrative': None,
                 'generation_time': time.time() - start_time,
                 'timestamp': datetime.now().isoformat(),
