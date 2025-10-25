@@ -114,7 +114,7 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
     
-    def generate_with_cohere(self, prompt: str, model: str = "command-r-plus") -> Dict:
+    def generate_with_cohere(self, prompt: str, model: str = "command-a-03-2025") -> Dict:
         """Generate narrative using Cohere Command R+."""
         start_time = time.time()
         
@@ -153,8 +153,8 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
     
-    def generate_with_groq(self, prompt: str, model: str = "llama-3.1-70b-versatile") -> Dict:
-        """Generate narrative using Groq Llama 3.1."""
+    def generate_with_groq(self, prompt: str, model: str = "llama-3.3-70b-versatile") -> Dict:
+        """Generate narrative using Groq Llama 3.3."""
         start_time = time.time()
         
         try:
@@ -193,7 +193,7 @@ class MultiLLMNarrativeGenerator:
             }
     
     def generate_with_huggingface(self, prompt: str, 
-                                  model: str = "mistralai/Mixtral-8x7B-Instruct-v0.1") -> Dict:
+                                  model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct") -> Dict:
         """Generate narrative using HuggingFace."""
         start_time = time.time()
         
