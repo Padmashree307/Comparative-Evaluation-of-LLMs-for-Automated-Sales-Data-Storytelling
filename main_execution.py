@@ -5,6 +5,7 @@ Supports: Gemini, Cohere, Groq, Hugging Face
 """
 
 import os
+import sys
 from dotenv import load_dotenv
 
 from generate_sales_dataset import generate_sales_dataset
@@ -128,6 +129,9 @@ def main():
         traceback.print_exc()
         return None
     
+    # Force flush to ensure output appears
+    sys.stdout.flush()
+
     # ========================================================================
     # STEP 5: DISPLAY RESULTS SUMMARY
     # ========================================================================
