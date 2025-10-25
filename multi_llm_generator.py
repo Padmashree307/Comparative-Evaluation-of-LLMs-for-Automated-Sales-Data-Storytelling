@@ -10,11 +10,25 @@ from datetime import datetime
 import requests
 
 # LLM API imports
-from google import genai
-from google.genai import types
-import cohere
-from groq import Groq
-from huggingface_hub import InferenceClient
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
+
+try:
+    import cohere
+except ImportError:
+    cohere = None
+
+try:
+    from groq import Groq
+except ImportError:
+    Groq = None
+
+try:
+    from huggingface_hub import InferenceClient
+except ImportError:
+    InferenceClient = None
 
 
 class MultiLLMNarrativeGenerator:
@@ -38,63 +52,62 @@ class MultiLLMNarrativeGenerator:
     def _initialize_clients(self):
         """Initialize all LLM API clients"""
         
-        # Gemini 2.0 Flash initialization
-        if 'gemini' in self.api_keys and self.api_keys['gemini']:
+        # Gemini initialization
+        if 'gemini' in self.api_keys and self.api_keys['gemini'] and genai:
             try:
-                # Configure the Gemini client
                 genai.configure(api_key=self.api_keys['gemini'])
-                self.clients['gemini'] = genai.Client(api_key=self.api_keys['gemini'])
+                self.clients['gemini'] = genai
                 print("   ✓ Gemini 2.0 Flash initialized")
             except Exception as e:
                 print(f"   ✗ Gemini initialization failed: {str(e)}")
+        elif not genai:
+            print("   ✗ Gemini library not installed (pip install google-generativeai)")
 
-        # Cohere Command initialization (updated model name)
-        if 'cohere' in self.api_keys and self.api_keys['cohere']:
+        # Cohere initialization
+        if 'cohere' in self.api_keys and self.api_keys['cohere'] and cohere:
             try:
                 self.clients['cohere'] = cohere.Client(api_key=self.api_keys['cohere'])
                 print("   ✓ Cohere Command initialized")
             except Exception as e:
                 print(f"   ✗ Cohere initialization failed: {str(e)}")
+        elif not cohere:
+            print("   ✗ Cohere library not installed (pip install cohere)")
 
-        # Groq Llama 3.3 initialization
-        if 'groq' in self.api_keys and self.api_keys['groq']:
+        # Groq initialization
+        if 'groq' in self.api_keys and self.api_keys['groq'] and Groq:
             try:
                 self.clients['groq'] = Groq(api_key=self.api_keys['groq'])
                 print("   ✓ Groq Llama 3.3 initialized")
             except Exception as e:
                 print(f"   ✗ Groq initialization failed: {str(e)}")
+        elif not Groq:
+            print("   ✗ Groq library not installed (pip install groq)")
 
         # HuggingFace initialization
-        if 'huggingface' in self.api_keys and self.api_keys['huggingface']:
+        if 'huggingface' in self.api_keys and self.api_keys['huggingface'] and InferenceClient:
             try:
                 self.clients['huggingface'] = InferenceClient(token=self.api_keys['huggingface'])
                 print("   ✓ HuggingFace Inference initialized")
             except Exception as e:
                 print(f"   ✗ HuggingFace initialization failed: {str(e)}")
+        elif not InferenceClient:
+            print("   ✗ HuggingFace library not installed (pip install huggingface-hub)")
 
     def generate_with_gemini(self, prompt: str, model: str = "gemini-2.0-flash-exp") -> Dict:
         """
         Generate narrative using Google Gemini.
-        
-        Args:
-            prompt: Structured prompt for narrative generation
-            model: Gemini model version
-            
-        Returns:
-            Dictionary with narrative and metadata
         """
         start_time = time.time()
         try:
-            # Use the genai module directly for generation
-            response = self.clients['gemini'].models.generate_content(
-                model=model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.7,
-                    max_output_tokens=2048,
-                    top_p=0.95,
-                    top_k=40
-                )
+            model_instance = self.clients['gemini'].GenerativeModel(model)
+            response = model_instance.generate_content(
+                prompt,
+                generation_config={
+                    'temperature': 0.7,
+                    'max_output_tokens': 2048,
+                    'top_p': 0.95,
+                    'top_k': 40
+                }
             )
             narrative = response.text
             generation_time = time.time() - start_time
@@ -118,28 +131,25 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
 
-    def generate_with_cohere(self, prompt: str, model: str = "command-r") -> Dict:
+    def generate_with_cohere(self, prompt: str, model: str = "command") -> Dict:
         """
         Generate narrative using Cohere Command.
-        Updated to use 'command-r' (command-r-plus was deprecated Sept 2025)
+        Using base 'command' model (command-r and command-r-plus are deprecated)
         """
         start_time = time.time()
         try:
             response = self.clients['cohere'].chat(
-                model=model,  # Using 'command-r' instead of 'command-r-plus'
+                model=model,
                 message=prompt,
                 temperature=0.7,
                 max_tokens=2048,
-                p=0.95,
-                k=0,
-                frequency_penalty=0.0,
-                presence_penalty=0.0
+                p=0.95
             )
             narrative = response.text
             generation_time = time.time() - start_time
             
             return {
-                'model': 'Cohere Command R',
+                'model': 'Cohere Command',
                 'narrative': narrative,
                 'generation_time': round(generation_time, 2),
                 'timestamp': datetime.now().isoformat(),
@@ -149,7 +159,7 @@ class MultiLLMNarrativeGenerator:
             }
         except Exception as e:
             return {
-                'model': 'Cohere Command R',
+                'model': 'Cohere Command',
                 'narrative': None,
                 'generation_time': time.time() - start_time,
                 'timestamp': datetime.now().isoformat(),
@@ -201,56 +211,35 @@ class MultiLLMNarrativeGenerator:
                 'error': str(e)
             }
 
-    def generate_with_huggingface(self, prompt: str, model: str = "microsoft/Phi-3-mini-4k-instruct") -> Dict:
+    def generate_with_huggingface(self, prompt: str, model: str = "meta-llama/Llama-3.2-3B-Instruct") -> Dict:
         """
         Generate narrative using HuggingFace Inference API.
-        Updated to use Phi-3 (free tier accessible model)
+        Using Llama 3.2 3B Instruct (publicly accessible, no gating)
         """
         start_time = time.time()
         try:
-            # Use InferenceClient's text_generation method
-            response = self.clients['huggingface'].text_generation(
-                prompt=f"You are an expert sales analytics director.\n\n{prompt}",
-                model=model,
-                max_new_tokens=2048,
-                temperature=0.7,
-                top_p=0.95,
-                return_full_text=False
-            )
+            # Direct API call with requests (more reliable than InferenceClient)
+            API_URL = f"https://api-inference.huggingface.co/models/{model}"
+            headers = {"Authorization": f"Bearer {self.api_keys['huggingface']}"}
             
-            # Extract the generated text
-            narrative = response if isinstance(response, str) else str(response)
-            generation_time = time.time() - start_time
-            
-            return {
-                'model': 'HuggingFace Phi-3',
-                'narrative': narrative,
-                'generation_time': round(generation_time, 2),
-                'timestamp': datetime.now().isoformat(),
-                'success': True,
-                'token_count': len(narrative.split()),
-                'error': None
-            }
-        except Exception as e:
-            # Fallback: try with requests if InferenceClient fails
-            try:
-                API_URL = f"https://api-inference.huggingface.co/models/{model}"
-                headers = {"Authorization": f"Bearer {self.api_keys['huggingface']}"}
-                
-                payload = {
-                    "inputs": f"You are an expert sales analytics director.\n\n{prompt}",
-                    "parameters": {
-                        "max_new_tokens": 2048,
-                        "temperature": 0.7,
-                        "top_p": 0.95,
-                        "return_full_text": False
-                    },
-                    "options": {"wait_for_model": True}  # Wait if model is loading
+            payload = {
+                "inputs": f"<|system|>You are an expert sales analytics director creating executive business reports.</s>\n<|user|>{prompt}</s>\n<|assistant|>",
+                "parameters": {
+                    "max_new_tokens": 2048,
+                    "temperature": 0.7,
+                    "top_p": 0.95,
+                    "return_full_text": False,
+                    "do_sample": True
+                },
+                "options": {
+                    "wait_for_model": True,
+                    "use_cache": False
                 }
-                
-                response = requests.post(API_URL, headers=headers, json=payload, timeout=120)
-                response.raise_for_status()
-                
+            }
+            
+            response = requests.post(API_URL, headers=headers, json=payload, timeout=180)
+            
+            if response.status_code == 200:
                 result = response.json()
                 
                 # Extract generated text
@@ -264,7 +253,7 @@ class MultiLLMNarrativeGenerator:
                 generation_time = time.time() - start_time
                 
                 return {
-                    'model': 'HuggingFace Phi-3',
+                    'model': 'HuggingFace Llama 3.2',
                     'narrative': narrative,
                     'generation_time': round(generation_time, 2),
                     'timestamp': datetime.now().isoformat(),
@@ -272,15 +261,18 @@ class MultiLLMNarrativeGenerator:
                     'token_count': len(narrative.split()),
                     'error': None
                 }
-            except Exception as fallback_error:
-                return {
-                    'model': 'HuggingFace Phi-3',
-                    'narrative': None,
-                    'generation_time': time.time() - start_time,
-                    'timestamp': datetime.now().isoformat(),
-                    'success': False,
-                    'error': f"Primary error: {str(e)} | Fallback error: {str(fallback_error)}"
-                }
+            else:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            return {
+                'model': 'HuggingFace Llama 3.2',
+                'narrative': None,
+                'generation_time': time.time() - start_time,
+                'timestamp': datetime.now().isoformat(),
+                'success': False,
+                'error': str(e)
+            }
 
     def generate_all_narratives(self, prompt: str) -> Dict[str, Dict]:
         """
@@ -290,59 +282,4 @@ class MultiLLMNarrativeGenerator:
         results = {}
         
         if 'gemini' in self.clients:
-            print("⏳ Generating with Gemini 2.0 Flash...")
-            results['gemini'] = self.generate_with_gemini(prompt)
-            if results['gemini']['success']:
-                print(f"   ✓ Completed in {results['gemini']['generation_time']}s\n")
-            else:
-                print(f"   ✗ Failed: {results['gemini']['error']}\n")
-        
-        if 'cohere' in self.clients:
-            print("⏳ Generating with Cohere Command R...")
-            results['cohere'] = self.generate_with_cohere(prompt)
-            if results['cohere']['success']:
-                print(f"   ✓ Completed in {results['cohere']['generation_time']}s\n")
-            else:
-                print(f"   ✗ Failed: {results['cohere']['error']}\n")
-        
-        if 'groq' in self.clients:
-            print("⏳ Generating with Groq Llama 3.3...")
-            results['groq'] = self.generate_with_groq(prompt)
-            if results['groq']['success']:
-                print(f"   ✓ Completed in {results['groq']['generation_time']}s\n")
-            else:
-                print(f"   ✗ Failed: {results['groq']['error']}\n")
-        
-        if 'huggingface' in self.clients:
-            print("⏳ Generating with HuggingFace Phi-3...")
-            results['huggingface'] = self.generate_with_huggingface(prompt)
-            if results['huggingface']['success']:
-                print(f"   ✓ Completed in {results['huggingface']['generation_time']}s\n")
-            else:
-                print(f"   ✗ Failed: {results['huggingface']['error']}\n")
-        
-        self.narratives = results
-        successful = sum(1 for r in results.values() if r['success'])
-        print(f"✅ {successful}/{len(results)} narratives generated successfully!\n")
-        
-        return results
-
-    def get_generation_summary(self) -> Dict:
-        """Get summary statistics of narrative generation"""
-        if not self.narratives:
-            return {'error': 'No narratives generated yet'}
-        
-        successful = [n for n in self.narratives.values() if n['success']]
-        failed = [n for n in self.narratives.values() if not n['success']]
-        
-        return {
-            'total_models': len(self.narratives),
-            'successful_generations': len(successful),
-            'failed_generations': len(failed),
-            'average_generation_time': round(
-                sum(n['generation_time'] for n in successful) / len(successful) if successful else 0, 2
-            ),
-            'total_tokens_generated': sum(n.get('token_count', 0) for n in successful),
-            'fastest_model': min(successful, key=lambda x: x['generation_time'])['model'] if successful else None,
-            'slowest_model': max(successful, key=lambda x: x['generation_time'])['model'] if successful else None
-        }
+            print
