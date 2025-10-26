@@ -1,9 +1,14 @@
 """
-GENAI Multi-LLM Research Visualization
-Creates all visualizations: Bar Chart, Radar Chart, Heatmap, Box Plot, and Narrative Comparison
+GENAI Multi-LLM Dynamic Visualization Script
+Auto-loads your latest evaluation results and generates all research visuals:
+- Bar Chart (Composite Scores)
+- Radar Chart (Multi-Dimensional Quality)
+- Heatmap (Metrics)
+- Box Plot (Distribution)
+- Side-by-Side Comparison Chart
 """
 
-# ✅ Ensures compatibility for command prompt (no GUI required)
+# ✅ Safe for Command Prompt execution (No GUI)
 import matplotlib
 matplotlib.use('Agg')
 
@@ -12,34 +17,51 @@ import seaborn as sns
 import numpy as np
 import json
 from pathlib import Path
+from glob import glob
 
-# ================================
-# CONFIGURATION
-# ================================
-DATA = {
-    'Gemini': {'Composite': 79.31, 'Readability': 46.3, 'Actionability': 100, 'Accuracy': 47.2, 'Completeness': 100},
-    'Cohere': {'Composite': 85.86, 'Readability': 36.7, 'Actionability': 100, 'Accuracy': 88.7, 'Completeness': 100},
-    'Groq':   {'Composite': 81.75, 'Readability': 55.4, 'Actionability': 100, 'Accuracy': 42.3, 'Completeness': 100}
-}
+# ========================== AUTO DETECT LATEST FILE ==================================
+def load_latest_evaluation():
+    eval_files = glob("research_outputs/evaluations_*.json")
+    if not eval_files:
+        raise FileNotFoundError("❌ No evaluation files found in research_outputs/. Run main_execution.py first.")
+    latest_file = max(eval_files, key=lambda x: Path(x).stat().st_mtime)
+    print(f"📂 Using latest evaluation file: {latest_file}")
+    
+    with open(latest_file, 'r') as f:
+        data = json.load(f)
+    
+    evaluations = data.get('evaluations', {})
+    models = {}
+    for model, metrics in evaluations.items():
+        if metrics and metrics.get("composite_quality_score"):
+            models[model.capitalize()] = {
+                "Composite": metrics.get("composite_quality_score", 0),
+                "Readability": metrics.get("readability", {}).get("flesch_reading_ease", 0),
+                "Actionability": metrics.get("actionability", {}).get("actionability_score", 0),
+                "Accuracy": metrics.get("statistical_accuracy", {}).get("accuracy_rate", 0),
+                "Completeness": metrics.get("completeness", {}).get("completeness_score", 0)
+            }
+    return models
 
+
+# ========================== CHARTS DIRECTORY INIT ==================================
 OUTPUT_DIR = Path("visualizations")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-
-# ================================
-# 1️⃣ BAR CHART: COMPOSITE SCORES
-# ================================
-def bar_chart_scores():
-    models = list(DATA.keys())
-    scores = [DATA[m]['Composite'] for m in models]
+# ========================== VISUALIZATION FUNCTIONS ================================
+def plot_bar_chart(data):
+    """Bar chart: Composite Scores"""
+    models = list(data.keys())
+    scores = [data[m]['Composite'] for m in models]
     
     plt.figure(figsize=(8, 6))
-    bars = plt.bar(models, scores, color=['#16a085', '#2980b9', '#c0392b'], edgecolor='black', alpha=0.85)
+    colors = sns.color_palette("husl", len(models))
+    bars = plt.bar(models, scores, color=colors, edgecolor='black', alpha=0.85)
     for bar in bars:
         plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
-                 f"{bar.get_height():.2f}", ha='center', fontsize=12, fontweight='bold')
-    plt.title("Composite Score Comparison Across LLMs", fontsize=15, fontweight='bold')
-    plt.ylabel("Composite Score (Out of 100)", fontsize=12)
+                 f"{bar.get_height():.1f}", ha='center', fontsize=12, fontweight='bold')
+    plt.title("Composite Score Comparison", fontsize=15, fontweight='bold')
+    plt.ylabel("Composite Score (Out of 100)")
     plt.ylim(0, 100)
     plt.grid(axis="y", linestyle="--", alpha=0.5)
     plt.tight_layout()
@@ -47,123 +69,109 @@ def bar_chart_scores():
     plt.close()
 
 
-# ================================
-# 2️⃣ RADAR CHART: OVERALL QUALITY
-# ================================
-def radar_chart():
-    labels = ['Readability', 'Actionability', 'Accuracy', 'Completeness']
-    num_vars = len(labels)
+def plot_radar_chart(data):
+    """Radar chart: Quality across metrics"""
+    metrics = ['Readability', 'Actionability', 'Accuracy', 'Completeness']
+    num_vars = len(metrics)
     angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
     angles += angles[:1]
-
+    
     plt.figure(figsize=(8, 8))
     ax = plt.subplot(111, polar=True)
-
-    colors = ['#1abc9c', '#3498db', '#e74c3c']
-
-    for idx, (model, metrics) in enumerate(DATA.items()):
-        values = [metrics[m] for m in labels]
-        values += values[:1]
-        ax.plot(angles, values, color=colors[idx], linewidth=2, label=model)
-        ax.fill(angles, values, color=colors[idx], alpha=0.25)
-
+    colors = sns.color_palette("husl", len(data))
+    
+    for idx, (model, values) in enumerate(data.items()):
+        scores = [values[m] for m in metrics]
+        scores += scores[:1]
+        ax.plot(angles, scores, color=colors[idx], linewidth=2, label=model)
+        ax.fill(angles, scores, color=colors[idx], alpha=0.25)
+    
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(labels, fontsize=12, fontweight='bold')
-    ax.set_yticks([20, 40, 60, 80, 100])
+    ax.set_xticklabels(metrics, fontsize=12)
     ax.set_ylim(0, 100)
-    ax.set_title("Multi-Dimensional LLM Quality Comparison (Radar)", fontsize=15, fontweight='bold', pad=20)
-    ax.legend(loc='upper right', bbox_to_anchor=(1.15, 1.2))
+    ax.set_yticks([25, 50, 75, 100])
+    ax.set_title("Multi-Dimensional Quality Comparison (Radar)", fontsize=15, fontweight="bold", pad=25)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.15, 1.15))
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / "02_radar_chart.png", dpi=300, bbox_inches="tight")
     plt.close()
 
 
-# ================================
-# 3️⃣ HEATMAP: QUALITY METRICS
-# ================================
-def heatmap_metrics():
-    models = list(DATA.keys())
+def plot_heatmap(data):
+    """Heatmap: Metrics per LLM"""
+    models = list(data.keys())
     metrics = ['Readability', 'Actionability', 'Accuracy', 'Completeness']
+    heat_data = [[data[m][k] for k in metrics] for m in models]
     
-    data_matrix = [[DATA[m][metric] for metric in metrics] for m in models]
-
     plt.figure(figsize=(8, 5))
-    sns.heatmap(data_matrix, annot=True, fmt='.1f', cmap="YlGnBu", cbar_kws={'label': 'Score (Out of 100)'}, 
-                xticklabels=metrics, yticklabels=models, linewidths=1, linecolor='black', annot_kws={'fontsize':11})
-    plt.title("Heatmap of LLM Quality Metrics", fontsize=15, fontweight='bold', pad=20)
+    sns.heatmap(heat_data, annot=True, cmap="YlGnBu", fmt=".1f", 
+                xticklabels=metrics, yticklabels=models, linewidths=1.5, linecolor='black',
+                cbar_kws={'label': 'Score (0-100)'})
+    plt.title("Model Quality Metric Heatmap", fontsize=15, fontweight='bold')
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / "03_heatmap_metrics.png", dpi=300, bbox_inches="tight")
     plt.close()
 
 
-# ================================
-# 4️⃣ BOX PLOT: PERFORMANCE DISTRIBUTION
-# ================================
-def box_plot_performance():
+def plot_box(data):
+    """Box plot: Metric score volatility"""
     metric_data = {
-        'Readability': [DATA[m]['Readability'] for m in DATA],
-        'Actionability': [DATA[m]['Actionability'] for m in DATA],
-        'Accuracy': [DATA[m]['Accuracy'] for m in DATA],
-        'Completeness': [DATA[m]['Completeness'] for m in DATA]
+        'Readability': [v['Readability'] for v in data.values()],
+        'Actionability': [v['Actionability'] for v in data.values()],
+        'Accuracy': [v['Accuracy'] for v in data.values()],
+        'Completeness': [v['Completeness'] for v in data.values()]
     }
-
+    
     plt.figure(figsize=(8, 5))
-    plt.boxplot(metric_data.values(), labels=metric_data.keys(), showmeans=True,
-                meanline=True, patch_artist=True,
-                boxprops=dict(facecolor='#ecf0f1', color='black'),
-                medianprops=dict(color='red', linewidth=1.5),
-                meanprops=dict(color='blue', linewidth=2))
-    plt.title("Performance Distribution by Metric", fontsize=15, fontweight='bold')
-    plt.ylabel("Score (Out of 100)", fontsize=12)
-    plt.grid(axis='y', linestyle='--', alpha=0.6)
+    plt.boxplot(metric_data.values(), labels=metric_data.keys(), showmeans=True, patch_artist=True,
+                boxprops=dict(facecolor='#eaf2f8', color='black'),
+                medianprops=dict(color='red'), meanprops=dict(color='blue', linewidth=2))
+    plt.title("Metric Distribution Across Models", fontsize=15, fontweight='bold')
+    plt.ylabel("Score (Out of 100)")
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "04_box_plot.png", dpi=300, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / "04_box_distribution.png", dpi=300, bbox_inches="tight")
     plt.close()
 
 
-# ================================
-# 5️⃣ SIDE-BY-SIDE COMPARISON (BAR + HATCH STYLE)
-# ================================
-def side_by_side_comparison():
-    metrics = ['Readability', 'Accuracy', 'Actionability', 'Completeness']
-    bar_width = 0.25
+def plot_side_by_side(data):
+    """Side-by-side bar: Compare all metrics for each model"""
+    metrics = ['Readability', 'Actionability', 'Accuracy', 'Completeness']
     x = np.arange(len(metrics))
-
-    values_gemini = [DATA['Gemini'][m] for m in metrics]
-    values_cohere = [DATA['Cohere'][m] for m in metrics]
-    values_groq = [DATA['Groq'][m] for m in metrics]
-
+    width = 0.25
     plt.figure(figsize=(10, 6))
-    plt.bar(x - bar_width, values_gemini, width=bar_width, color='#8e44ad', label='Gemini', hatch='//')
-    plt.bar(x, values_cohere, width=bar_width, color='#27ae60', label='Cohere', hatch='xx')
-    plt.bar(x + bar_width, values_groq, width=bar_width, color='#c0392b', label='Groq', hatch='\\\\')
-
-    plt.xticks(x, metrics, fontsize=12, fontweight='bold')
-    plt.ylabel("Metric Score (Out of 100)", fontsize=12)
-    plt.title("Side-by-Side Metric Comparison Across Models", fontsize=15, fontweight='bold')
-    plt.legend(fontsize=11)
+    colors = sns.color_palette("husl", len(data))
+    
+    for i, (model, values) in enumerate(data.items()):
+        scores = [values[m] for m in metrics]
+        plt.bar(x + i*width, scores, width, label=model, color=colors[i], edgecolor='black')
+    
+    plt.xticks(x + width, metrics)
+    plt.ylabel("Scores (Out of 100)")
+    plt.title("Side-by-Side Quality Comparison")
+    plt.legend()
     plt.grid(axis='y', linestyle='--', alpha=0.6)
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "05_side_by_side_comparison.png", dpi=300, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / "05_side_by_side.png", dpi=300, bbox_inches="tight")
     plt.close()
 
 
-# ================================
-# 🚀 MASTER FUNCTION
-# ================================
+# ========================== RUN ALL ==================================
 def generate_all():
+    data = load_latest_evaluation()
     print("\n" + "="*80)
-    print("GENERATING ALL VISUALIZATIONS")
+    print("GENERATING ALL VISUALIZATIONS (Dynamic)")
     print("="*80)
-    bar_chart_scores()
-    radar_chart()
-    heatmap_metrics()
-    box_plot_performance()
-    side_by_side_comparison()
-    print("\n✓ All visualizations saved successfully in:", OUTPUT_DIR)
+    
+    plot_bar_chart(data)
+    plot_radar_chart(data)
+    plot_heatmap(data)
+    plot_box(data)
+    plot_side_by_side(data)
+    
+    print(f"\n✓ All visualizations created successfully in: {OUTPUT_DIR.resolve()}")
     print("="*80)
 
 
-# Execute if run directly
-if __name__ == "__main__":
+if __name__ == '__main__':
     generate_all()
