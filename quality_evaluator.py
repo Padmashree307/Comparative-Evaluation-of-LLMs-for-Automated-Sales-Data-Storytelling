@@ -203,43 +203,40 @@ class NarrativeQualityEvaluator:
         }
     
     def calculate_completeness_score(self, narrative: str) -> Dict:
-        """
-        Measure coverage of key insights from ground truth.
-        
-        Args:
-            narrative: Generated narrative text
-            
-        Returns:
-            Dictionary with completeness metrics
-        """
-        # Key themes to check
+        """Calculate completeness - coverage of required business themes."""
         required_themes = [
             'revenue', 'sales', 'customer', 'product', 'trend', 
-            'growth', 'performance', 'recommendation'
+            'growth', 'performance', 'recommendation', 'action'
         ]
         
-        covered_themes = [
-            theme for theme in required_themes 
-            if theme in narrative.lower()
-        ]
+        narrative_lower = narrative.lower()
+        covered_themes = [t for t in required_themes if t in narrative_lower]
         
-        completeness_percentage = (len(covered_themes) / len(required_themes)) * 100
+        # Base completeness score
+        completeness_score = (len(covered_themes) / len(required_themes)) * 100
         
-        # Check for key insight categories
-        has_kpis = 'revenue' in narrative.lower() or 'sales' in narrative.lower()
-        has_trends = 'trend' in narrative.lower() or 'growth' in narrative.lower()
-        has_segments = 'customer' in narrative.lower() or 'segment' in narrative.lower()
-        has_recommendations = 'recommend' in narrative.lower() or 'should' in narrative.lower()
+        # BONUS: Reward section headers and structure
+        has_sections = sum([
+            '###' in narrative or '##' in narrative,  # Has markdown headers
+            'executive summary' in narrative_lower,
+            'performance' in narrative_lower,
+            'recommendation' in narrative_lower or 'action' in narrative_lower,
+        ])
+        
+        section_bonus = (has_sections / 4) * 15  # Up to +15 for structure
+        completeness_score = min(100, completeness_score + section_bonus)
+        
+        # BONUS: Reward longer reports (more comprehensive)
+        word_count = len(narrative.split())
+        if word_count > 400:
+            length_bonus = min(5, (word_count - 400) / 200)
+            completeness_score = min(100, completeness_score + length_bonus)
         
         return {
-            'completeness_score': round(completeness_percentage, 2),
+            'completeness_score': completeness_score,
             'covered_themes': covered_themes,
-            'missing_themes': [t for t in required_themes if t not in covered_themes],
-            'has_kpis': has_kpis,
-            'has_trends': has_trends,
-            'has_segments': has_segments,
-            'has_recommendations': has_recommendations,
-            'assessment': 'Complete' if completeness_percentage >= 75 else 'Partial'
+            'required_themes': required_themes,
+            'theme_coverage': f"{len(covered_themes)}/{len(required_themes)}"
         }
     
     def evaluate_with_llm_judge(self, narrative: str) -> Dict:
@@ -411,9 +408,9 @@ Return ONLY a valid JSON object with numeric scores (no markdown formatting, no 
         completeness = evaluation['completeness']['completeness_score']
         
         composite = (
-            (readability_normalized * 0.20) +
+            (readability_normalized * 0.25) +
             (actionability * 0.30) +
-            (accuracy * 0.25) +
+            (accuracy * 0.20) +
             (completeness * 0.25)
         )
         

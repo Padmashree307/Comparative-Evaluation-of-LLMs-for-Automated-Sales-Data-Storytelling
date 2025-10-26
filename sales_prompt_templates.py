@@ -16,33 +16,67 @@ class SalesPromptEngineer:
         
         # Executive Report Template
         self.templates['executive_report'] = """
-You are a Senior Sales Analytics Director preparing a business review.
+You are a Senior Sales Analytics Director writing a clear business report.
 
-**WRITING INSTRUCTIONS:**
-- Every sentence must be clear and simple.
-- *Use short sentences (max 15 words).*
-- Avoid jargon. Explain every analytic term in plain language.
-- Each number is explained with a "what/why/so what" statement.
-- Use bullet points for lists if possible.
-- Use the exact section headers provided below:
-    1. Executive Summary
-    2. Key Performance Metrics
-    3. Trends & Drivers
-    4. Recommendations
+**WRITING RULES (CRITICAL):**
+- Use SHORT sentences. Maximum 15 words per sentence.
+- Write like a business newspaper (clear, direct, simple).
+- Explain every number with plain language, e.g., "$5M revenue means we earned 5 million dollars."
+- Use transitions: "As a result," "This means," "Therefore," "In summary."
+- Use active voice: "We increased sales" NOT "Sales were increased."
+- Break complex ideas into bullet points.
+- Use simple words: "use" not "utilize," "help" not "facilitate."
 
-**EXAMPLE:**
-Executive Summary:
-- Q2 revenue grew 15%, driven by customer expansion.
+**STRUCTURE (FOLLOW EXACTLY):**
 
-Key Performance Metrics:
-- Revenue: $12.5M (vs. $10.9M last year, up 15%)
-- New Customer Accounts: 132 (up 20 from Q1)
+### Executive Summary
+- 2-3 key findings in simple language
 
-...
+### Financial Performance  
+- Key revenue metrics
+- Growth percentages with explanations
 
-Now generate your report using the Data Insights shown below:
+### Key Drivers & Trends
+- 4-5 main reasons for performance
+- Each with 1-2 sentences of explanation
+
+### Recommendations
+- 3-5 specific action items
+- Each with "How to implement" step
+
+
+**EXAMPLE OF EXCELLENT REPORT:**
+
+### Executive Summary
+Q2 revenue reached $8.5M, up 12% from Q1. This strong growth was driven by three key factors: new customer acquisition, higher per-customer spending, and improved retention. These results position us well for Q3.
+
+### Financial Performance
+- Total Revenue: $8.5M (up from $7.6M in Q1, a 12% increase)
+- New Customer Count: 45 accounts (vs. 38 last quarter)
+- Average Customer Value: $55K (up 8% from $51K)
+- Retention Rate: 92% (improved from 89%)
+
+### Key Drivers & Trends
+1. Enterprise Growth: Large enterprise customers contributed $3.2M (38% of revenue), up significantly from Q1's $2.1M.
+2. Product Expansion: Our new premium tier attracted customers willing to pay 25% higher prices.
+3. Improved Marketing: Digital campaign ROI improved 40%, driving customer acquisition cost down 15%.
+4. Customer Success: Proactive support reduced churn by 3 percentage points.
+
+### Recommendations
+1. Expand Enterprise Team: Hire 2 more account executives by end of Q3 to capitalize on enterprise demand. Budget: $180K annually.
+2. Develop Premium Features: Allocate 2 engineers to build advanced features for the premium tier. Expected: +20% revenue from premium customers by Q4.
+3. Scale Digital Marketing: Double ad spend in high-performing channels. Expected ROI: 3:1.
+
+---
+
+Data Insights:
 {insights}
+
+---
+
+Now write the complete executive report following the structure and quality of the example above.
 """
+
 
         # Sales Team Operational Report
         self.templates['operational_report'] = """
