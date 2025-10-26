@@ -344,8 +344,54 @@ class GenAIStorytellingPipeline:
         print("PIPELINE EXECUTION COMPLETE")
         print("=" * 80 + "\n")
 
-        sys.stdout.flush()
-        
+        # ==================== START: PIPELINE SUMMARY SECTION ====================
+        # Generate and print pipeline execution summary
+        print("📊 Pipeline Summary:")
+
+        # Calculate summary statistics
+        total_models = len(self.api_keys_validated)
+        successful_gens = len([m for m, n in self.narratives.items() if n and n.get('success')])
+        failed_gens = total_models - successful_gens
+
+        print(f"   - Total models attempted: {total_models}")
+        print(f"   - Successful generations: {successful_gens}")
+        print(f"   - Failed generations: {failed_gens}")
+
+        # Calculate generation times if available
+        if self.narratives:
+            gen_times = [n.get('generation_time', 0) for n in self.narratives.values() 
+                        if n and n.get('generation_time')]
+            if gen_times:
+                avg_time = sum(gen_times) / len(gen_times)
+                print(f"   - Average generation time: {avg_time:.1f}s")
+                
+                # Find fastest model
+                fastest_model = min(self.narratives.items(), 
+                                key=lambda x: x[1].get('generation_time', float('inf')) 
+                                                if x[1] else float('inf'))
+                if fastest_model[1] and fastest_model[1].get('generation_time'):
+                    model_display = fastest_model[0].replace('_', ' ').title()
+                    print(f"   - Fastest model: {model_display}")
+
+        # Find best overall model based on composite score
+        if self.evaluations:
+            best_model = max(self.evaluations.items(), 
+                        key=lambda x: x[1].get('composite_quality_score', 0) 
+                                        if isinstance(x[1], dict) else 0)
+            if best_model[1] and isinstance(best_model[1], dict) and \
+            best_model[1].get('composite_quality_score', 0) > 0:
+                model_display = best_model[0].replace('_', ' ').title()
+                score = best_model[1].get('composite_quality_score', 0)
+                print(f"   - Best overall model: {model_display} ({score:.1f}/100)")
+            else:
+                print(f"   - Best overall model: N/A")
+        else:
+            print(f"   - Best overall model: N/A")
+
+        print()
+        print(f"📁 All outputs saved to: {self.output_dir}/")
+        print()
+    
         return {
             'insights': self.insights,
             'structured_insights': self.structured_insights,
