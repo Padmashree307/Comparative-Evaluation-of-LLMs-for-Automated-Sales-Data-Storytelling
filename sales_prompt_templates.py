@@ -231,68 +231,42 @@ You are a Product Marketing Manager analyzing product portfolio performance.
 - Length: 600-800 words
 """
     
-    def generate_prompt(self, template_type: str, insights: Dict, context: Dict = None) -> str:
-        """Generate domain-specific prompts with readability optimization."""
-        
-        if template_type == 'executive_report':
-            prompt = f"""
-        SALES EXECUTIVE REPORT GENERATION
-
-        Your task: Create a clear, actionable sales report for business executives.
-
-        AUDIENCE: Busy executives who need insights quickly
-        GOAL: Explain what happened, why it matters, and what to do next
-
-        WRITING RULES (VERY IMPORTANT - FOLLOW EXACTLY):
-        1. Use simple words. NO jargon or technical terms.
-        2. Keep sentences SHORT. Never more than 15 words per sentence.
-        3. One main idea per sentence.
-        4. Use bullet points when listing things.
-        5. Always use active voice: "We increased sales" NOT "Sales were increased"
-        6. Always explain numbers with context: "$5M is up 20% from last quarter"
-
-        REPORT STRUCTURE (FOLLOW EXACTLY):
-        1. HEADLINE - Your #1 finding in ONE sentence
-        2. KEY METRICS - Top 5 numbers with clear explanations
-        3. WHAT HAPPENED - 5-7 bullet points explaining the data
-        4. WHY IT MATTERS - Explain the business impact in simple terms
-        5. WHAT TO DO - 3-5 specific recommendations
-
-        DATA TO ANALYZE:
-        {json.dumps(insights, indent=2)}
-
-        BEFORE YOU OUTPUT - CHECK EVERY SENTENCE:
-        ☐ Each sentence has FEWER than 15 words
-        ☐ Each number is explained (e.g., "$2M up 15%")
-        ☐ Uses active voice throughout (We/Our/The company)
-        ☐ No passive sentences like "It was noted that..."
-        ☐ Every number comes from the data provided
-        ☐ Each recommendation is specific and actionable
-        ☐ A 10th grader could understand every sentence
-
-        EXAMPLE OF EXCELLENT OUTPUT:
-
-        Sales Hit $5M. That's up 20% from last quarter.
-
-        Why?
-        • We got 15 new enterprise customers
-        • Average deal size grew from $50K to $62K
-        • Customer retention improved to 85%
-
-        What We Should Do:
-        1. Hire 5 more enterprise sales reps immediately
-        2. Build custom features for top 10 customers
-        3. Create a retention bonus program for key clients
-
-        ---
-
-        Now generate the report following all these rules:
+    def generate_prompt(self, template_type: str, insights: Dict, 
+                       context: Dict = None) -> str:
         """
-            return prompt
-            
-            # For other template types, return default
-            return f"Generate a {template_type} based on: {json.dumps(insights, indent=2)}"
-
+        Generate customized prompt with insights and context injection.
+        
+        Args:
+            template_type: Type of report (executive_report, operational_report, etc.)
+            insights: Structured insights dictionary
+            context: Additional business context (industry, period, etc.)
+        
+        Returns:
+            Formatted prompt string ready for LLM
+        """
+        if template_type not in self.templates:
+            raise ValueError(f"Template type '{template_type}' not found")
+        
+        # Default context
+        default_context = {
+            'industry': 'Technology/SaaS',
+            'period': 'Q4 2024'
+        }
+        
+        if context:
+            default_context.update(context)
+        
+        # Convert insights to formatted JSON string
+        insights_str = json.dumps(insights, indent=2, default=str)
+        
+        # Format template with context and insights
+        prompt = self.templates[template_type].format(
+            industry=default_context['industry'],
+            period=default_context['period'],
+            insights=insights_str
+        )
+        
+        return prompt
     
     def add_custom_constraints(self, prompt: str, constraints: Dict) -> str:
         """
