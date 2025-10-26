@@ -226,6 +226,8 @@ class SalesStatisticalEngine:
     
     def generate_full_analysis(self):
         """Run complete statistical analysis pipeline"""
+        analysis = {}
+
         print("   → Extracting KPIs...")
         self.extract_kpis()
         
@@ -245,3 +247,14 @@ class SalesStatisticalEngine:
         self.detect_anomalies()
         
         return self.insights
+
+        # Add verification metrics for accuracy checking
+        analysis['verification_metrics'] = {
+            'total_records': len(self.data),
+            'total_revenue': float(self.data['Amount'].sum()) if 'Amount' in self.data.columns else 0,
+            'average_transaction': float(self.data['Amount'].mean()) if 'Amount' in self.data.columns else 0,
+            'date_range_start': str(self.data['Date'].min()) if 'Date' in self.data.columns else 'N/A',
+            'date_range_end': str(self.data['Date'].max()) if 'Date' in self.data.columns else 'N/A',
+        }
+        
+        return analysis
