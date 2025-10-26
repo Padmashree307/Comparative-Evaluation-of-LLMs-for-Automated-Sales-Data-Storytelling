@@ -269,45 +269,6 @@ class MultiLLMNarrativeGenerator:
             }
 
 
-
-    
-            
-            response = requests.post(API_URL, headers=headers, json=payload, timeout=180)
-            
-            if response.status_code == 200:
-                result = response.json()
-                
-                if isinstance(result, list) and len(result) > 0:
-                    narrative = result[0].get('generated_text', str(result[0]))
-                elif isinstance(result, dict):
-                    narrative = result.get('generated_text', result.get('text', str(result)))
-                else:
-                    narrative = str(result)
-                
-                generation_time = time.time() - start_time
-                
-                return {
-                    'model': 'HuggingFace Llama 3.2',
-                    'narrative': narrative,
-                    'generation_time': round(generation_time, 2),
-                    'timestamp': datetime.now().isoformat(),
-                    'success': True,
-                    'token_count': len(narrative.split()),
-                    'error': None
-                }
-            else:
-                raise Exception(f"HTTP {response.status_code}: {response.text}")
-                
-        except Exception as e:
-            return {
-                'model': 'HuggingFace Llama 3.2',
-                'narrative': None,
-                'generation_time': time.time() - start_time,
-                'timestamp': datetime.now().isoformat(),
-                'success': False,
-                'error': str(e)
-            }
-
     def generate_all_narratives(self, prompt: str) -> Dict[str, Dict]:
         """Generate narratives using all available LLMs."""
         print("\n🚀 Starting Multi-LLM Narrative Generation...\n")
