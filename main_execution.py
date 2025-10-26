@@ -123,6 +123,9 @@ def main():
             report_type='executive_report',
             context=business_context
         )
+
+        sys.stdout.flush()
+
     except Exception as e:
         print(f"\n   ❌ Pipeline execution failed with error:\n   {str(e)}\n")
         import traceback

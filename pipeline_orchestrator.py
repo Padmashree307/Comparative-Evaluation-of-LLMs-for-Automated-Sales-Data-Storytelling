@@ -337,9 +337,14 @@ class GenAIStorytellingPipeline:
             print(f" ⚠️  Comparison report generation skipped due to error: {e}")
             comparison_report = eval_results.get('comparison', {})
         
+        import sys
+        sys.stdout.flush()
+
         print("\n" + "=" * 80)
         print("PIPELINE EXECUTION COMPLETE")
         print("=" * 80 + "\n")
+
+        sys.stdout.flush()
         
         return {
             'insights': self.insights,
