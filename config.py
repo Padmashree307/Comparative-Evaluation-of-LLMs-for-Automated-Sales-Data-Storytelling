@@ -24,7 +24,7 @@ def set_seeds():
 
 # ==================== LLM CONFIGURATION ====================
 LLM_CONFIG = {
-    'temperature': 0,  # 0 = deterministic, no randomness
+    'temperature': 0.3,  # 0 = deterministic, no randomness
     'max_tokens': 2000,
     'top_p': 0.9,
 }

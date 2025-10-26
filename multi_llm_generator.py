@@ -108,7 +108,7 @@ class MultiLLMNarrativeGenerator:
             response = model_instance.generate_content(
                 prompt,
                 generation_config={
-                    'temperature': 0,
+                    'temperature': 0.3,
                     'max_output_tokens': 2048,
                     'top_p': 0.95,
                     'top_k': 40
@@ -143,7 +143,7 @@ class MultiLLMNarrativeGenerator:
             response = self.clients['cohere'].chat(
                 model=model,
                 message=prompt,
-                temperature=0,
+                temperature=0.3,
                 max_tokens=2048,
                 p=0.95
             )
@@ -185,7 +185,7 @@ class MultiLLMNarrativeGenerator:
                         "content": prompt
                     }
                 ],
-                temperature=0,
+                temperature=0.3,
                 max_tokens=2048,
                 top_p=0.95
             )
@@ -226,7 +226,7 @@ class MultiLLMNarrativeGenerator:
                 "inputs": f"Executive Sales Report:\n{prompt[:500]}\n\nSummary:",
                 "parameters": {
                     "max_new_tokens": 300,
-                    "temperature": 0,
+                    "temperature": 0.3,
                     "return_full_text": False
                 }
             }
