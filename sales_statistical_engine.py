@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from config import set_seeds
+set_seeds()
 from config import KMEANS_CONFIG 
 from scipy import stats
 from sklearn.cluster import KMeans

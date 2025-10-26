@@ -109,9 +109,9 @@ class MultiLLMNarrativeGenerator:
                 prompt,
                 generation_config={
                     'temperature': 0,
-                    'max_output_tokens': 2048,
-                    'top_p': 0.95,
-                    'top_k': 40
+                    'max_output_tokens': 2500,
+                    'top_p': 1.0,
+                    'top_k': 1
                 }  # ✅ FIXED: Added missing closing brace
             )
             narrative = response.text
@@ -144,8 +144,8 @@ class MultiLLMNarrativeGenerator:
                 model=model,
                 message=prompt,
                 temperature=0,
-                max_tokens=2048,
-                p=0.95
+                max_tokens=2500,
+                p=1.0
             )
             narrative = response.text
             generation_time = time.time() - start_time
@@ -186,8 +186,8 @@ class MultiLLMNarrativeGenerator:
                     }
                 ],
                 temperature=0,
-                max_tokens=2048,
-                top_p=0.95
+                max_tokens=2500,
+                top_p=1.0
             )
             narrative = response.choices[0].message.content
             generation_time = time.time() - start_time
