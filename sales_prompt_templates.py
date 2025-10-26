@@ -16,68 +16,32 @@ class SalesPromptEngineer:
         
         # Executive Report Template
         self.templates['executive_report'] = """
-You are a Senior Sales Analytics Director preparing a quarterly business review for the C-suite.
+You are a Senior Sales Analytics Director preparing a business review.
 
-**Your Role & Audience:**
-- Role: Chief Revenue Officer's trusted analytics advisor
-- Audience: CEO, CFO, CMO, Board Members
-- Objective: Drive strategic decisions on sales optimization and revenue growth
-- Tone: Professional, data-driven, action-oriented
+**WRITING INSTRUCTIONS:**
+- Every sentence must be clear and simple.
+- *Use short sentences (max 15 words).*
+- Avoid jargon. Explain every analytic term in plain language.
+- Each number is explained with a "what/why/so what" statement.
+- Use bullet points for lists if possible.
+- Use the exact section headers provided below:
+    1. Executive Summary
+    2. Key Performance Metrics
+    3. Trends & Drivers
+    4. Recommendations
 
-**Business Context:**
-- Industry: {industry}
-- Fiscal Period: {period}
-- Strategic Priorities: Revenue growth, customer retention, market expansion
+**EXAMPLE:**
+Executive Summary:
+- Q2 revenue grew 15%, driven by customer expansion.
 
-**Data Insights:**
+Key Performance Metrics:
+- Revenue: $12.5M (vs. $10.9M last year, up 15%)
+- New Customer Accounts: 132 (up 20 from Q1)
+
+...
+
+Now generate your report using the Data Insights shown below:
 {insights}
-
-**Report Structure:**
-Generate a comprehensive executive report with these exact sections:
-
-## Executive Summary
-- Lead with the single most critical finding (1-2 sentences)
-- 3-4 key performance highlights with specific numbers
-- Primary strategic recommendation
-
-## Revenue Performance Analysis
-- Total revenue achievement vs. targets
-- Revenue trend analysis with growth rates
-- Product/category performance breakdown
-- Geographic/regional performance patterns
-
-## Customer Insights & Behavior
-- Customer segmentation analysis (Champions, Loyal, At-Risk, Lost)
-- Customer lifetime value trends
-- Retention and churn indicators
-- High-value customer characteristics
-
-## Growth Opportunities
-- Top 3 revenue expansion opportunities with quantified potential
-- Underperforming areas with recovery potential
-- Market trends to capitalize on
-
-## Risk Assessment
-- Revenue risks and declining trends
-- Customer churn vulnerabilities
-- Operational inefficiencies impacting sales
-
-## Strategic Recommendations
-Provide 5-7 prioritized, SMART recommendations:
-- Specific action items with clear owners
-- Measurable success metrics
-- Achievable timeframes
-- Relevant to current business context
-- Time-bound with implementation phases
-
-**Output Requirements:**
-- Use markdown formatting with clear headers
-- Include specific numbers, percentages, and dollar amounts
-- Write in active voice with executive-appropriate language
-- Each insight must be backed by data from the provided analysis
-- Recommendations must be actionable within 30-90 days
-- Target reading level: Executive (Flesch Reading Ease 60-70)
-- Length: 800-1200 words
 """
 
         # Sales Team Operational Report
