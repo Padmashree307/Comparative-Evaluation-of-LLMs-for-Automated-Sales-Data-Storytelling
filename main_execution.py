@@ -132,9 +132,6 @@ def main():
         traceback.print_exc()
         return None
     
-    # Force flush to ensure output appears
-    sys.stdout.flush()
-
     # ========================================================================
     # STEP 5: DISPLAY RESULTS SUMMARY
     # ========================================================================

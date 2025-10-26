@@ -243,5 +243,6 @@ class SalesStatisticalEngine:
         
         print("   → Detecting anomalies...")
         self.detect_anomalies()
+        
         return self.insights
         
