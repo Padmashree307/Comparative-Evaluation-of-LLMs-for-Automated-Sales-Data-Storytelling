@@ -41,6 +41,7 @@ class GenAIStorytellingPipeline:
             return True
         
         self.api_keys_valid = all(_is_valid_key(v) for v in self.api_keys.values())
+        self.api_keys_validated = [k for k, v in self.api_keys.items() if _is_valid_key(v)]
         
         if not self.api_keys_valid:
             print(" ⚠️  One or more API keys appear invalid or placeholder values were used.")
