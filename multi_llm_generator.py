@@ -8,6 +8,13 @@ from typing import Dict, List
 import time
 from datetime import datetime
 import requests
+import numpy as np  # ← ADD THIS
+import random      # ← ADD THIS
+from config import RANDOM_SEED, LLM_CONFIG  # ← ADD THIS
+
+# Set seeds
+np.random.seed(RANDOM_SEED)
+random.seed(RANDOM_SEED)
 
 # LLM API imports with error handling
 try:
@@ -101,7 +108,7 @@ class MultiLLMNarrativeGenerator:
             response = model_instance.generate_content(
                 prompt,
                 generation_config={
-                    'temperature': 0.7,
+                    'temperature': 0,
                     'max_output_tokens': 2048,
                     'top_p': 0.95,
                     'top_k': 40
@@ -136,7 +143,7 @@ class MultiLLMNarrativeGenerator:
             response = self.clients['cohere'].chat(
                 model=model,
                 message=prompt,
-                temperature=0.7,
+                temperature=0,
                 max_tokens=2048,
                 p=0.95
             )
@@ -178,7 +185,7 @@ class MultiLLMNarrativeGenerator:
                         "content": prompt
                     }
                 ],
-                temperature=0.7,
+                temperature=0,
                 max_tokens=2048,
                 top_p=0.95
             )
@@ -219,7 +226,7 @@ class MultiLLMNarrativeGenerator:
                 "inputs": f"Executive Sales Report:\n{prompt[:500]}\n\nSummary:",
                 "parameters": {
                     "max_new_tokens": 300,
-                    "temperature": 0.7,
+                    "temperature": 0,
                     "return_full_text": False
                 }
             }

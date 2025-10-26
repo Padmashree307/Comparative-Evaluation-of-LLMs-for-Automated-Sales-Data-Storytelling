@@ -1,11 +1,20 @@
 import pandas as pd
 import numpy as np
+from config import KMEANS_CONFIG 
 from scipy import stats
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 import warnings
 warnings.filterwarnings('ignore')
+
+# Add these imports for reproducibility
+import random
+from config import RANDOM_SEED  # ← ADD THIS
+
+# Set seeds for reproducibility
+np.random.seed(RANDOM_SEED)
+random.seed(RANDOM_SEED)
 
 class SalesStatisticalEngine:
     """
@@ -96,6 +105,7 @@ class SalesStatisticalEngine:
         }
         return self.insights['Product Performance']
     
+    from config import RANDOM_SEED
     def analyze_customer_segments(self):
         """Customer segmentation using RFM and clustering"""
         # RFM Analysis
@@ -243,6 +253,6 @@ class SalesStatisticalEngine:
         
         print("   → Detecting anomalies...")
         self.detect_anomalies()
-        
+
         return self.insights
         

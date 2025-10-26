@@ -3,6 +3,13 @@ import json
 from typing import Dict, List
 import textstat
 from collections import Counter
+import numpy as np  # ← ADD THIS
+import random      # ← ADD THIS
+from config import RANDOM_SEED  # ← ADD THIS
+
+# Set seeds for reproducibility
+np.random.seed(RANDOM_SEED)
+random.seed(RANDOM_SEED)
 
 # Import for Gemini LLM judge
 from google.genai import types
