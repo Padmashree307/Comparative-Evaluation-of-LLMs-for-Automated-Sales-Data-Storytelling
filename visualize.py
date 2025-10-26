@@ -123,7 +123,7 @@ def plot_box(data):
     }
     
     plt.figure(figsize=(8, 5))
-    plt.boxplot(metric_data.values(), labels=metric_data.keys(), showmeans=True, patch_artist=True,
+    plt.boxplot(metric_data.values(), tick_labels=metric_data.keys(), showmeans=True, patch_artist=True,
                 boxprops=dict(facecolor='#eaf2f8', color='black'),
                 medianprops=dict(color='red'), meanprops=dict(color='blue', linewidth=2))
     plt.title("Metric Distribution Across Models", fontsize=15, fontweight='bold')
