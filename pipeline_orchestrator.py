@@ -358,21 +358,26 @@ class GenAIStorytellingPipeline:
         print(f"   - Successful generations: {successful_gens}")
         print(f"   - Failed generations: {failed_gens}")
 
-        # Calculate generation times if available
+        # Calculate generation times if available (only for successful models)
         if self.narratives:
-            gen_times = [n.get('generation_time', 0) for n in self.narratives.values() 
-                        if n and n.get('generation_time')]
-            if gen_times:
+            # Filter only successful narratives
+            successful_narratives_with_times = {
+                k: v for k, v in self.narratives.items() 
+                if v and v.get('success') and v.get('generation_time')
+            }
+            
+            if successful_narratives_with_times:
+                gen_times = [n.get('generation_time', 0) for n in successful_narratives_with_times.values()]
                 avg_time = sum(gen_times) / len(gen_times)
                 print(f"   - Average generation time: {avg_time:.1f}s")
                 
-                # Find fastest model
-                fastest_model = min(self.narratives.items(), 
-                                key=lambda x: x[1].get('generation_time', float('inf')) 
-                                                if x[1] else float('inf'))
+                # Find fastest model (only from successful models)
+                fastest_model = min(successful_narratives_with_times.items(), 
+                                  key=lambda x: x[1].get('generation_time', float('inf')))
                 if fastest_model[1] and fastest_model[1].get('generation_time'):
                     model_display = fastest_model[0].replace('_', ' ').title()
                     print(f"   - Fastest model: {model_display}")
+
 
         # Find best overall model based on composite score
         if self.evaluations:
