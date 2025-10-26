@@ -2,7 +2,8 @@
 Visualization Module for Multi-LLM Research Analysis
 Generates publication-ready charts from evaluation results
 """
-
+import matplotlib
+matplotlib.use('Agg')
 import json
 import matplotlib.pyplot as plt
 import numpy as np
