@@ -1,0 +1,404 @@
+{
+  "evaluations": {
+    "gemini": {
+      "model": "gemini",
+      "word_count": 964,
+      "character_count": 7043,
+      "readability": {
+        "flesch_reading_ease": 26.28,
+        "flesch_kincaid_grade": 13.2,
+        "gunning_fog": 16.75,
+        "automated_readability_index": 15.42,
+        "coleman_liau_index": 16.55,
+        "readability_assessment": "Needs improvement"
+      },
+      "actionability": {
+        "actionability_score": 100,
+        "action_verbs_count": 22,
+        "specific_metrics_count": 128,
+        "timeframes_mentioned": 9,
+        "has_recommendation_section": true,
+        "assessment": "High"
+      },
+      "statistical_accuracy": {
+        "accuracy_rate": 28.91,
+        "total_numbers_in_narrative": 128,
+        "matched_numbers": 37,
+        "assessment": "Low"
+      },
+      "completeness": {
+        "completeness_score": 100.0,
+        "covered_themes": [
+          "revenue",
+          "sales",
+          "customer",
+          "product",
+          "trend",
+          "growth",
+          "performance",
+          "recommendation"
+        ],
+        "missing_themes": [],
+        "has_kpis": true,
+        "has_trends": true,
+        "has_segments": true,
+        "has_recommendations": true,
+        "assessment": "Complete"
+      },
+      "llm_judge_scores": {
+        "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+        "error_type": "AttributeError"
+      },
+      "composite_quality_score": 66.74
+    },
+    "cohere": {
+      "model": "cohere",
+      "word_count": 709,
+      "character_count": 5363,
+      "readability": {
+        "flesch_reading_ease": 25.38,
+        "flesch_kincaid_grade": 12.75,
+        "gunning_fog": 16.68,
+        "automated_readability_index": 15.47,
+        "coleman_liau_index": 17.06,
+        "readability_assessment": "Needs improvement"
+      },
+      "actionability": {
+        "actionability_score": 100,
+        "action_verbs_count": 14,
+        "specific_metrics_count": 89,
+        "timeframes_mentioned": 7,
+        "has_recommendation_section": true,
+        "assessment": "High"
+      },
+      "statistical_accuracy": {
+        "accuracy_rate": 29.21,
+        "total_numbers_in_narrative": 89,
+        "matched_numbers": 26,
+        "assessment": "Low"
+      },
+      "completeness": {
+        "completeness_score": 100.0,
+        "covered_themes": [
+          "revenue",
+          "sales",
+          "customer",
+          "product",
+          "trend",
+          "growth",
+          "performance",
+          "recommendation"
+        ],
+        "missing_themes": [],
+        "has_kpis": true,
+        "has_trends": true,
+        "has_segments": true,
+        "has_recommendations": true,
+        "assessment": "Complete"
+      },
+      "llm_judge_scores": {
+        "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+        "error_type": "AttributeError"
+      },
+      "composite_quality_score": 66.45
+    },
+    "groq": {
+      "model": "groq",
+      "word_count": 637,
+      "character_count": 4343,
+      "readability": {
+        "flesch_reading_ease": 36.09,
+        "flesch_kincaid_grade": 11.63,
+        "gunning_fog": 14.75,
+        "automated_readability_index": 12.78,
+        "coleman_liau_index": 14.32,
+        "readability_assessment": "Needs improvement"
+      },
+      "actionability": {
+        "actionability_score": 100,
+        "action_verbs_count": 12,
+        "specific_metrics_count": 90,
+        "timeframes_mentioned": 18,
+        "has_recommendation_section": true,
+        "assessment": "High"
+      },
+      "statistical_accuracy": {
+        "accuracy_rate": 31.11,
+        "total_numbers_in_narrative": 90,
+        "matched_numbers": 28,
+        "assessment": "Low"
+      },
+      "completeness": {
+        "completeness_score": 100.0,
+        "covered_themes": [
+          "revenue",
+          "sales",
+          "customer",
+          "product",
+          "trend",
+          "growth",
+          "performance",
+          "recommendation"
+        ],
+        "missing_themes": [],
+        "has_kpis": true,
+        "has_trends": true,
+        "has_segments": true,
+        "has_recommendations": true,
+        "assessment": "Complete"
+      },
+      "llm_judge_scores": {
+        "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+        "error_type": "AttributeError"
+      },
+      "composite_quality_score": 71.21
+    }
+  },
+  "comparison": {
+    "rankings": [
+      {
+        "rank": 1,
+        "model": "groq",
+        "composite_score": 71.21,
+        "readability_score": 36.09,
+        "actionability_score": 100,
+        "accuracy_rate": 31.11,
+        "completeness_score": 100.0
+      },
+      {
+        "rank": 2,
+        "model": "gemini",
+        "composite_score": 66.74,
+        "readability_score": 26.28,
+        "actionability_score": 100,
+        "accuracy_rate": 28.91,
+        "completeness_score": 100.0
+      },
+      {
+        "rank": 3,
+        "model": "cohere",
+        "composite_score": 66.45,
+        "readability_score": 25.38,
+        "actionability_score": 100,
+        "accuracy_rate": 29.21,
+        "completeness_score": 100.0
+      }
+    ],
+    "best_overall": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 637,
+        "character_count": 4343,
+        "readability": {
+          "flesch_reading_ease": 36.09,
+          "flesch_kincaid_grade": 11.63,
+          "gunning_fog": 14.75,
+          "automated_readability_index": 12.78,
+          "coleman_liau_index": 14.32,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 12,
+          "specific_metrics_count": 90,
+          "timeframes_mentioned": 18,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 31.11,
+          "total_numbers_in_narrative": 90,
+          "matched_numbers": 28,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "llm_judge_scores": {
+          "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+          "error_type": "AttributeError"
+        },
+        "composite_quality_score": 71.21
+      }
+    ],
+    "best_readability": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 637,
+        "character_count": 4343,
+        "readability": {
+          "flesch_reading_ease": 36.09,
+          "flesch_kincaid_grade": 11.63,
+          "gunning_fog": 14.75,
+          "automated_readability_index": 12.78,
+          "coleman_liau_index": 14.32,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 12,
+          "specific_metrics_count": 90,
+          "timeframes_mentioned": 18,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 31.11,
+          "total_numbers_in_narrative": 90,
+          "matched_numbers": 28,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "llm_judge_scores": {
+          "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+          "error_type": "AttributeError"
+        },
+        "composite_quality_score": 71.21
+      }
+    ],
+    "best_actionability": [
+      "gemini",
+      {
+        "model": "gemini",
+        "word_count": 964,
+        "character_count": 7043,
+        "readability": {
+          "flesch_reading_ease": 26.28,
+          "flesch_kincaid_grade": 13.2,
+          "gunning_fog": 16.75,
+          "automated_readability_index": 15.42,
+          "coleman_liau_index": 16.55,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 22,
+          "specific_metrics_count": 128,
+          "timeframes_mentioned": 9,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 28.91,
+          "total_numbers_in_narrative": 128,
+          "matched_numbers": 37,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "llm_judge_scores": {
+          "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+          "error_type": "AttributeError"
+        },
+        "composite_quality_score": 66.74
+      }
+    ],
+    "best_accuracy": [
+      "groq",
+      {
+        "model": "groq",
+        "word_count": 637,
+        "character_count": 4343,
+        "readability": {
+          "flesch_reading_ease": 36.09,
+          "flesch_kincaid_grade": 11.63,
+          "gunning_fog": 14.75,
+          "automated_readability_index": 12.78,
+          "coleman_liau_index": 14.32,
+          "readability_assessment": "Needs improvement"
+        },
+        "actionability": {
+          "actionability_score": 100,
+          "action_verbs_count": 12,
+          "specific_metrics_count": 90,
+          "timeframes_mentioned": 18,
+          "has_recommendation_section": true,
+          "assessment": "High"
+        },
+        "statistical_accuracy": {
+          "accuracy_rate": 31.11,
+          "total_numbers_in_narrative": 90,
+          "matched_numbers": 28,
+          "assessment": "Low"
+        },
+        "completeness": {
+          "completeness_score": 100.0,
+          "covered_themes": [
+            "revenue",
+            "sales",
+            "customer",
+            "product",
+            "trend",
+            "growth",
+            "performance",
+            "recommendation"
+          ],
+          "missing_themes": [],
+          "has_kpis": true,
+          "has_trends": true,
+          "has_segments": true,
+          "has_recommendations": true,
+          "assessment": "Complete"
+        },
+        "llm_judge_scores": {
+          "error": "LLM judge evaluation failed: module 'google.generativeai' has no attribute 'models'",
+          "error_type": "AttributeError"
+        },
+        "composite_quality_score": 71.21
+      }
+    ]
+  }
+}

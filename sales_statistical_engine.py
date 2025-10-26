@@ -226,7 +226,6 @@ class SalesStatisticalEngine:
     
     def generate_full_analysis(self):
         """Run complete statistical analysis pipeline"""
-
         print("   → Extracting KPIs...")
         self.extract_kpis()
         
@@ -244,6 +243,5 @@ class SalesStatisticalEngine:
         
         print("   → Detecting anomalies...")
         self.detect_anomalies()
-        
         return self.insights
         

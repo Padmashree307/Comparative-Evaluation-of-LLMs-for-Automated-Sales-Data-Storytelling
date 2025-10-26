@@ -231,8 +231,7 @@ You are a Product Marketing Manager analyzing product portfolio performance.
 - Length: 600-800 words
 """
     
-    def generate_prompt(self, template_type: str, insights: Dict, 
-                       context: Dict = None) -> str:
+    def generate_prompt(self, template_type: str, insights: Dict,context: Dict = None) -> str:
         """
         Generate customized prompt with insights and context injection.
         
