@@ -245,16 +245,19 @@ class SalesStatisticalEngine:
         
         print("   → Detecting anomalies...")
         self.detect_anomalies()
-        
-        return self.insights
 
         # Add verification metrics for accuracy checking
-        analysis['verification_metrics'] = {
-            'total_records': len(self.data),
-            'total_revenue': float(self.data['Amount'].sum()) if 'Amount' in self.data.columns else 0,
-            'average_transaction': float(self.data['Amount'].mean()) if 'Amount' in self.data.columns else 0,
-            'date_range_start': str(self.data['Date'].min()) if 'Date' in self.data.columns else 'N/A',
-            'date_range_end': str(self.data['Date'].max()) if 'Date' in self.data.columns else 'N/A',
-        }
+        try:
+            self.insights['verification_metrics'] = {
+                'total_records': len(self.df),
+                'total_revenue': float(self.df['Amount'].sum()) if 'Amount' in self.df.columns else 0,
+                'average_transaction': float(self.df['Amount'].mean()) if 'Amount' in self.df.columns else 0,
+                'date_range_start': str(self.df['Date'].min()) if 'Date' in self.df.columns else 'N/A',
+                'date_range_end': str(self.df['Date'].max()) if 'Date' in self.df.columns else 'N/A',
+            }
+        except Exception as e:
+            print(f"Warning: Could not add verification metrics: {e}")
+            self.insights['verification_metrics'] = {}
         
-        return analysis
+        return self.insights
+        
