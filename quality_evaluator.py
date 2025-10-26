@@ -408,9 +408,9 @@ Return ONLY a valid JSON object with numeric scores (no markdown formatting, no 
         completeness = evaluation['completeness']['completeness_score']
         
         composite = (
-            (readability_normalized * 0.25) +
+            (readability_normalized * 0.20) +
             (actionability * 0.30) +
-            (accuracy * 0.20) +
+            (accuracy * 0.25) +
             (completeness * 0.25)
         )
         
