@@ -24,9 +24,10 @@ def set_seeds():
 
 # ==================== LLM CONFIGURATION ====================
 LLM_CONFIG = {
-    'temperature': 0,  # 0 = deterministic, no randomness
+    'temperature': 0,        # 0 = deterministic, no randomness
     'max_tokens': 2500,
-    'top_p': 0.9,
+    'top_p': 1.0,            # Changed from 0.9 to 1.0
+    'top_k': 1               # Added for deterministic token selection
 }
 
 # ==================== CLUSTERING CONFIGURATION ====================

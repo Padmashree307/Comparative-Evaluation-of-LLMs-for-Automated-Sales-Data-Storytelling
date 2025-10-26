@@ -3,11 +3,13 @@ GenAI Data Storytelling Pipeline - Complete Execution Script
 Research Paper: Sales Domain Implementation
 Supports: Gemini, Cohere, Groq, Hugging Face
 """
+from config import set_seeds
+set_seeds()
 
 import os
 import sys
 from dotenv import load_dotenv
-from config import set_seeds
+
 
 from generate_sales_dataset import generate_sales_dataset
 from pipeline_orchestrator import GenAIStorytellingPipeline
@@ -18,7 +20,7 @@ def main():
     Main execution function for the complete research implementation.
     """
     # Initialize reproducibility
-    set_seeds()
+    
     
     print("\n" + "=" * 80)
     print("GENAI-POWERED DATA STORYTELLING RESEARCH IMPLEMENTATION")
