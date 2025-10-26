@@ -27,23 +27,6 @@ You are a Senior Sales Analytics Director writing a clear business report.
 - Break complex ideas into bullet points.
 - Use simple words: "use" not "utilize," "help" not "facilitate."
 
-**STRUCTURE (FOLLOW EXACTLY):**
-
-### Executive Summary
-- 2-3 key findings in simple language
-
-### Financial Performance  
-- Key revenue metrics
-- Growth percentages with explanations
-
-### Key Drivers & Trends
-- 4-5 main reasons for performance
-- Each with 1-2 sentences of explanation
-
-### Recommendations
-- 3-5 specific action items
-- Each with "How to implement" step
-
 
 **EXAMPLE OF EXCELLENT REPORT:**
 
