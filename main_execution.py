@@ -377,7 +377,7 @@ def main():
         print(f"\n✓ All visualizations created successfully in: {OUTPUT_DIR.resolve()}")
         print("="*80)
 
-        generate_all()
+    generate_all()
 
     
     return results
