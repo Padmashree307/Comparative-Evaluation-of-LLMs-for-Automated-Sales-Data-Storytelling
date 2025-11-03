@@ -18,7 +18,7 @@ This repository contains the complete code, pipeline orchestration, evaluation f
 - [Caveats and limitations](#caveats-and-limitations)
 - [Future work](#future-work)
 - [Citation](#citation)
-- [License & contact](#license--contact)
+- [Contact](#license--contact)
 
 ---
 
@@ -388,14 +388,13 @@ If you use this code, dataset, or findings, please cite:
 
 ---
 
-## License & contact
-
-**License:** MIT License (see `LICENSE` file)
+## Contact
 
 **Authors:**
 - **I. Padmashree** — Data Analytics Student, AIMIT
   - Email: iipadmashreeee@gmail.com
   - GitHub: [@padmashree-i](https://github.com/padmashree-i)
+  - LinkedIn: [ipadmashree](https://www.linkedin.com/in/padmashree02/)
   
 - **Rohit Kumar** — Data Analytics Student, AIMIT
 
@@ -408,7 +407,5 @@ If you use this code, dataset, or findings, please cite:
 **Questions?** Open an issue on GitHub or email: iipadmashreeee@gmail.com
 
 ---
-
-**Enjoy — and thanks for using SACAIM! 🚀**
 
 *Last updated: November 3, 2025*
