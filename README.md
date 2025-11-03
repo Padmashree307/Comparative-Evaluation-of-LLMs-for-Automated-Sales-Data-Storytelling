@@ -1,6 +1,6 @@
-# SACAIM — Comparative Evaluation of Large Language Models for Automated Sales Data Storytelling
+# Comparative Evaluation of Large Language Models for Automated Sales Data Storytelling
 
-**Authors:** I. Padmashree, Rohit Kumar, Dr. Hemalatha N
+**Authors:** I. Padmashree, Rohit Kumar
 
 This repository contains the complete code, pipeline orchestration, evaluation framework, and research artifacts for the project: *Comparative Evaluation of Large Language Models for Automated Sales Data Storytelling*. The README explains how to reproduce results, understand the pipeline, and deploy locally.
 
