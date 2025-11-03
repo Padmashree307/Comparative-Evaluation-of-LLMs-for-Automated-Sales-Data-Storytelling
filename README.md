@@ -18,7 +18,7 @@ This repository contains the complete code, pipeline orchestration, evaluation f
 - [Caveats and limitations](#caveats-and-limitations)
 - [Future work](#future-work)
 - [Citation](#citation)
-- [Contact](#license--contact)
+- [Contact](#contact)
 
 ---
 
