@@ -393,7 +393,7 @@ If you use this code, dataset, or findings, please cite:
 **Authors:**
 - **I. Padmashree** — Data Analytics Student, AIMIT
   - Email: iipadmashreeee@gmail.com
-  - GitHub: [@padmashree-i](https://github.com/padmashree-i)
+  - GitHub: [@padmashree-i](https://github.com/Padmashree307)
   - LinkedIn: [ipadmashree](https://www.linkedin.com/in/padmashree02/)
   
 - **Rohit Kumar** — Data Analytics Student, AIMIT
